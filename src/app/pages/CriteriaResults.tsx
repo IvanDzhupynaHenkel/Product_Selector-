@@ -582,7 +582,7 @@ export function CriteriaResults() {
                 <span className="text-sm font-medium">Back</span>
               </a>
               <div className="h-5 w-px bg-slate-200"></div>
-              <h1 className="text-xl font-semibold text-slate-900">{categoryDisplay}</h1>
+              <h1 className="text-xl font-medium text-slate-900 font-[Henkel_GT_Flexa]">{categoryDisplay}</h1>
             </div>
           </div>
         </div>
