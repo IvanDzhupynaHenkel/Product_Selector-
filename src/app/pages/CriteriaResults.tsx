@@ -900,17 +900,24 @@ export function CriteriaResults() {
                     }`}
                   >
                     {/* Comparison checkbox */}
-                    <div className="absolute top-5 right-5 z-10">
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={(e) => {
-                          e.preventDefault();
-                          toggleProductComparison(product.id);
-                        }}
-                        className="w-5 h-5 rounded border-slate-300 text-[#D4000E] focus:ring-[#D4000E] cursor-pointer"
-                      />
-                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleProductComparison(product.id);
+                      }}
+                      className={`absolute top-5 right-5 z-10 w-5 h-5 rounded flex items-center justify-center transition-colors ${
+                        isSelected
+                          ? "bg-[#5EE9B5] border-2 border-[#5EE9B5]"
+                          : "bg-white border-2 border-slate-300 hover:border-[#5EE9B5]"
+                      }`}
+                    >
+                      {isSelected && (
+                        <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                          <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      )}
+                    </button>
 
                     <div
                       onClick={() => {
@@ -1211,12 +1218,20 @@ export function CriteriaResults() {
                         }`}
                       >
                         <td className="px-3 py-3">
-                          <input
-                            type="checkbox"
-                            checked={isSelected}
-                            onChange={() => toggleProductComparison(product.id)}
-                            className="w-4 h-4 rounded border-slate-300 text-[#D4000E] focus:ring-[#D4000E] cursor-pointer"
-                          />
+                          <button
+                            onClick={() => toggleProductComparison(product.id)}
+                            className={`w-4 h-4 rounded flex items-center justify-center transition-colors ${
+                              isSelected
+                                ? "bg-[#5EE9B5] border-2 border-[#5EE9B5]"
+                                : "bg-white border-2 border-slate-300 hover:border-[#5EE9B5]"
+                            }`}
+                          >
+                            {isSelected && (
+                              <svg width="8" height="6" viewBox="0 0 8 6" fill="none">
+                                <path d="M1 3L3 5L7 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            )}
+                          </button>
                         </td>
                         <td className="px-3 py-3 text-xs text-slate-600 font-mono whitespace-nowrap">
                           {product.ib_product_code || "—"}
@@ -1341,7 +1356,28 @@ export function CriteriaResults() {
       {/* Comparison modal */}
       {showComparison && (
         <ProductComparison
-          products={selectedProducts}
+          products={selectedProducts.map((p) => ({
+            id: p.id,
+            ibCode: p.ib_product_code ?? "",
+            name: p.ib_product_name ?? "",
+            abcClass: p.abc_class ?? "",
+            oneOrTwoC: p.one_c_two_c_product ?? "",
+            pumpability: p.pumpability ?? "",
+            sustainability: "",
+            usp: p.value_proposition ?? "",
+            ibSegments: p.ib_segment ? p.ib_segment.split(/[,;]/).map((s: string) => s.trim()).filter(Boolean) : [],
+            customerApproval: p.customer_approval ?? p.top_account_name ?? "",
+            cureTemp: p.cure_condition ?? "",
+            mixRatio: p.mix_ratio_volume ?? "",
+            density: p.density_g_cm3 ?? null,
+            eModulus: p.e_modulus_dma_gpa ?? null,
+            lapShear: p.lap_shear_n_mm2 ?? null,
+            tPeel: p.t_peel_n_mm ?? null,
+            impactPeel: p.impact_peel_n_mm_rt ?? null,
+            substrates: p.substrates ? p.substrates.split(/[\n,]/).map((s: string) => s.trim()).filter(Boolean) : [],
+            imageUrl: "",
+            isBestMatch: p.abc_class === "A",
+          }))}
           onClose={() => setShowComparison(false)}
         />
       )}

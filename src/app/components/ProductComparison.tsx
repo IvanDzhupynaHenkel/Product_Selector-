@@ -110,7 +110,7 @@ export function ProductComparison({ products, onClose }: Props) {
               <ComparisonRow
                 label="Pumpability"
                 values={products.map((p) =>
-                  p.pumpability.replace(" Pumpability", "")
+                  p.pumpability ? p.pumpability.replace(" Pumpability", "") : "—"
                 )}
               />
 
@@ -187,7 +187,7 @@ export function ProductComparison({ products, onClose }: Props) {
               {/* Lap Shear */}
               <ComparisonRow
                 label="Lap Shear"
-                values={products.map((p) => `${p.lapShear.toFixed(1)} N/mm²`)}
+                values={products.map((p) => p.lapShear != null ? `${p.lapShear.toFixed(1)} N/mm²` : "—")}
                 highlightDifferences
                 isNumeric
               />
@@ -195,7 +195,7 @@ export function ProductComparison({ products, onClose }: Props) {
               {/* T-Peel */}
               <ComparisonRow
                 label="T-Peel"
-                values={products.map((p) => `${p.tPeel.toFixed(1)} N/mm`)}
+                values={products.map((p) => p.tPeel != null ? `${p.tPeel.toFixed(1)} N/mm` : "—")}
                 highlightDifferences
                 isNumeric
               />
@@ -203,7 +203,7 @@ export function ProductComparison({ products, onClose }: Props) {
               {/* Impact Peel */}
               <ComparisonRow
                 label="Impact Peel"
-                values={products.map((p) => `${p.impactPeel.toFixed(1)} N/mm`)}
+                values={products.map((p) => p.impactPeel != null ? `${p.impactPeel.toFixed(1)} N/mm` : "—")}
                 highlightDifferences
                 isNumeric
               />
@@ -211,7 +211,7 @@ export function ProductComparison({ products, onClose }: Props) {
               {/* E-Modulus */}
               <ComparisonRow
                 label="E-Modulus"
-                values={products.map((p) => `${p.eModulus.toFixed(1)} GPa`)}
+                values={products.map((p) => p.eModulus != null ? `${p.eModulus.toFixed(1)} GPa` : "—")}
                 highlightDifferences
                 isNumeric
               />
@@ -219,7 +219,7 @@ export function ProductComparison({ products, onClose }: Props) {
               {/* Density */}
               <ComparisonRow
                 label="Density"
-                values={products.map((p) => `${p.density.toFixed(2)} g/cm³`)}
+                values={products.map((p) => p.density != null ? `${p.density.toFixed(2)} g/cm³` : "—")}
                 highlightDifferences
                 isNumeric
               />
@@ -241,12 +241,12 @@ export function ProductComparison({ products, onClose }: Props) {
                 label="Substrates"
                 values={products.map((p) => (
                   <div key={p.id} className="flex gap-1 flex-wrap">
-                    {p.substrates.map((s) => (
+                    {(typeof p.substrates === 'string' ? p.substrates.split(/[,\n]/) : p.substrates || []).map((s) => (
                       <span
                         key={s}
                         className="px-2 py-0.5 bg-slate-100 border border-slate-200 text-slate-600 text-xs rounded"
                       >
-                        {s}
+                        {s.trim()}
                       </span>
                     ))}
                   </div>
@@ -258,17 +258,17 @@ export function ProductComparison({ products, onClose }: Props) {
                 label="IB Segments"
                 values={products.map((p) => (
                   <div key={p.id} className="flex gap-1 flex-wrap">
-                    {p.ibSegments.slice(0, 3).map((seg) => (
+                    {(typeof p.ibSegments === 'string' ? p.ibSegments.split(/[,\n]/) : p.ibSegments || []).slice(0, 3).map((seg) => (
                       <span
                         key={seg}
                         className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs rounded-full"
                       >
-                        {seg}
+                        {seg.trim()}
                       </span>
                     ))}
-                    {p.ibSegments.length > 3 && (
+                    {(typeof p.ibSegments === 'string' ? p.ibSegments.split(/[,\n]/) : p.ibSegments || []).length > 3 && (
                       <span className="text-xs text-slate-400">
-                        +{p.ibSegments.length - 3} more
+                        +{(typeof p.ibSegments === 'string' ? p.ibSegments.split(/[,\n]/) : p.ibSegments || []).length - 3} more
                       </span>
                     )}
                   </div>
