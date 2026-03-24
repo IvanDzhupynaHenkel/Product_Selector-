@@ -175,6 +175,7 @@ function MultiSelectDropdown({
   openDropdown,
   setOpenDropdown,
   onChange,
+  singleSelect = false,
 }: {
   id: string;
   label: string;
@@ -183,9 +184,35 @@ function MultiSelectDropdown({
   openDropdown: string | null;
   setOpenDropdown: (v: string | null) => void;
   onChange: (values: string[]) => void;
+  singleSelect?: boolean;
 }) {
+  const chipContainerRef = useRef<HTMLDivElement>(null);
+  const [visibleCount, setVisibleCount] = useState(selectedValues.length);
+
+  useEffect(() => {
+    const container = chipContainerRef.current;
+    if (!container || selectedValues.length === 0) {
+      setVisibleCount(selectedValues.length);
+      return;
+    }
+    // Measure how many chips fit in one row
+    const containerWidth = container.offsetWidth - 36; // reserve space for +N badge
+    const chipEls = Array.from(container.querySelectorAll<HTMLElement>("[data-chip]"));
+    let usedWidth = 0;
+    let count = 0;
+    for (const el of chipEls) {
+      const w = el.offsetWidth + 4; // 4px gap
+      if (usedWidth + w > containerWidth && count > 0) break;
+      usedWidth += w;
+      count++;
+    }
+    setVisibleCount(count);
+  }, [selectedValues]);
+
   const toggleOption = (option: string) => {
-    if (selectedValues.includes(option)) {
+    if (singleSelect) {
+      onChange(selectedValues.includes(option) ? [] : [option]);
+    } else if (selectedValues.includes(option)) {
       onChange(selectedValues.filter((v) => v !== option));
     } else {
       onChange([...selectedValues, option]);
@@ -202,13 +229,42 @@ function MultiSelectDropdown({
           e.stopPropagation();
           setOpenDropdown(openDropdown === id ? null : id);
         }}
-        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg flex items-center justify-between hover:border-slate-400 transition-colors text-sm"
+        className="w-full min-h-[36px] px-3 py-1.5 bg-white border border-slate-200 rounded-lg flex items-center justify-between gap-2 hover:border-slate-400 transition-colors text-sm"
       >
-        <span className={selectedValues.length > 0 ? "text-slate-900" : "text-slate-400"}>
-          {selectedValues.length > 0 ? `${selectedValues.length} selected` : "All"}
-        </span>
+        <div ref={chipContainerRef} className="flex items-center gap-1 flex-1 min-w-0 overflow-hidden">
+          {selectedValues.length === 0 ? (
+            <span className="text-slate-400">All</span>
+          ) : (
+            <>
+              {selectedValues.map((v, i) => (
+                <span
+                  key={v}
+                  data-chip
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 text-slate-700 text-xs rounded-full whitespace-nowrap flex-shrink-0 ${i >= visibleCount ? "hidden" : ""}`}
+                >
+                  {v}
+                  <span
+                    role="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChange(selectedValues.filter((s) => s !== v));
+                    }}
+                    className="text-slate-400 hover:text-slate-700 leading-none"
+                  >
+                    ×
+                  </span>
+                </span>
+              ))}
+              {visibleCount < selectedValues.length && (
+                <span className="inline-flex items-center px-2 py-0.5 bg-slate-200 text-slate-600 text-xs rounded-full whitespace-nowrap flex-shrink-0">
+                  +{selectedValues.length - visibleCount}
+                </span>
+              )}
+            </>
+          )}
+        </div>
         <ChevronDown
-          className={`w-4 h-4 text-slate-400 transition-transform ${
+          className={`w-4 h-4 text-slate-400 flex-shrink-0 transition-transform ${
             openDropdown === id ? "rotate-180" : ""
           }`}
         />
@@ -221,10 +277,11 @@ function MultiSelectDropdown({
               className="flex items-center gap-2 px-3 py-2 hover:bg-slate-50 cursor-pointer"
             >
               <input
-                type="checkbox"
+                type={singleSelect ? "radio" : "checkbox"}
+                name={singleSelect ? id : undefined}
                 checked={selectedValues.includes(opt)}
                 onChange={() => toggleOption(opt)}
-                className="w-4 h-4 rounded border-slate-300 text-slate-600"
+                className="w-4 h-4 border-slate-300 text-slate-600"
               />
               <span className="text-sm text-slate-700">{opt}</span>
             </label>
@@ -418,11 +475,119 @@ export function CriteriaResults() {
         
         const data = await response.json();
         console.log("Filter options data:", data);
-        setFilterOptions(data);
+
+        // Merge API data with static fallbacks — use static if API field is empty
+        const staticFallback = {
+          one_c_two_c_product: ["1C", "2C"],
+          pumpability: ["Room Temperature Pumpability", "Warm Temperature Pumpability"],
+          nvh: ["No", "Yes"],
+          substrates: [
+            "Aluminum",
+            "Cold Rolled Steel (CRS)",
+            "Hot-Dip Galvanized Steel",
+            "Electro Galvanized Steel",
+            "Galvannealed Steel",
+            "Zinc Coated Surfaces",
+            "Zinc/Magnesium Surfaces",
+            "Oily Substrates",
+            "Painted Metal",
+            "Thermosets Composites",
+            "Plastics",
+            "CFRP",
+            "GFRP",
+          ],
+          cure_condition: [
+            "Room Temperature Cure",
+            "Low Temperature Cure (< 80°C)",
+            "Standard Temperature Cure (80–150°C)",
+            "High Temperature Cure (> 150°C)",
+          ],
+          top_account_name: [
+            "Adhesive Specialty",
+            "Beijing Antongchi Technology",
+            "Beijing Bowei Orient Technology",
+            "Beijing Bowei Oriental Technology",
+            "BMW",
+            "BYD",
+            "Chery",
+            "FAW",
+            "Ford",
+            "GM",
+            "Geely",
+            "Honda",
+            "Hyundai",
+            "Kia",
+            "Mercedes",
+            "Nissan",
+            "Renault",
+            "Stellantis",
+            "Tesla",
+            "Toyota",
+            "VW Group",
+            "Volvo",
+          ],
+          ib_segment: [
+            "AM BMW",
+            "AM BYD",
+            "AM Chinese OEMs",
+            "AM Ford-Group",
+            "AM Geely / Volvo",
+            "AM GM Group",
+            "AM Hyundai-Group",
+            "AM JLR",
+            "AM Mercedes",
+            "AM Renault-Nissan",
+            "AM Stellantis",
+            "AM Tesla",
+            "AM Toyota",
+            "AM VW-Group",
+          ],
+          abc_class: data.abc_class?.length ? data.abc_class : ["A", "B", "C"],
+          end_use: data.end_use ?? [],
+        };
+
+        setFilterOptions({
+          abc_class: data.abc_class?.length ? data.abc_class : staticFallback.abc_class,
+          end_use: data.end_use?.length ? data.end_use : staticFallback.end_use,
+          substrates: data.substrates?.length ? data.substrates : staticFallback.substrates,
+          one_c_two_c_product: data.one_c_two_c_product?.length ? data.one_c_two_c_product : staticFallback.one_c_two_c_product,
+          top_account_name: data.top_account_name?.length ? data.top_account_name : staticFallback.top_account_name,
+          pumpability: data.pumpability?.length ? data.pumpability : staticFallback.pumpability,
+          nvh: data.nvh?.length ? data.nvh : staticFallback.nvh,
+          cure_condition: data.cure_condition?.length ? data.cure_condition : staticFallback.cure_condition,
+          ib_segment: data.ib_segment?.length ? data.ib_segment : staticFallback.ib_segment,
+        });
       } catch (err) {
         console.error("Error fetching filter options:", err);
-        // Don't set error for filter options, just use empty arrays
-        console.log("Continuing with empty filter options");
+        // Use static fallbacks when API fails entirely
+        setFilterOptions({
+          abc_class: ["A", "B", "C"],
+          end_use: [],
+          substrates: [
+            "Aluminum", "Cold Rolled Steel (CRS)", "Hot-Dip Galvanized Steel",
+            "Electro Galvanized Steel", "Galvannealed Steel", "Zinc Coated Surfaces",
+            "Zinc/Magnesium Surfaces", "Oily Substrates", "Painted Metal",
+            "Thermosets Composites", "Plastics", "CFRP", "GFRP",
+          ],
+          one_c_two_c_product: ["1C", "2C"],
+          top_account_name: [
+            "Adhesive Specialty", "Beijing Antongchi Technology", "Beijing Bowei Orient Technology",
+            "Beijing Bowei Oriental Technology", "BMW", "BYD", "Chery", "FAW", "Ford", "GM",
+            "Geely", "Honda", "Hyundai", "Kia", "Mercedes", "Nissan", "Renault",
+            "Stellantis", "Tesla", "Toyota", "VW Group", "Volvo",
+          ],
+          pumpability: ["Room Temperature Pumpability", "Warm Temperature Pumpability"],
+          nvh: ["No", "Yes"],
+          cure_condition: [
+            "Room Temperature Cure", "Low Temperature Cure (< 80°C)",
+            "Standard Temperature Cure (80–150°C)", "High Temperature Cure (> 150°C)",
+          ],
+          ib_segment: [
+            "AM BMW", "AM BYD", "AM Chinese OEMs", "AM Ford-Group", "AM Geely / Volvo",
+            "AM GM Group", "AM Hyundai-Group", "AM JLR", "AM Mercedes",
+            "AM Renault-Nissan", "AM Stellantis", "AM Tesla", "AM Toyota", "AM VW-Group",
+          ],
+        });
       }
     };
     fetchFilterOptions();
@@ -638,8 +803,8 @@ export function CriteriaResults() {
 
         {/* ── Full filter panel — collapses on scroll ── */}
         <div
-          className="overflow-hidden transition-all duration-300 ease-in-out"
-          style={{ maxHeight: showFullFilters ? "800px" : "0px", opacity: showFullFilters ? 1 : 0 }}
+          className={`transition-all duration-300 ease-in-out ${!showFullFilters ? "overflow-hidden" : "overflow-visible"}`}
+          style={{ maxHeight: showFullFilters ? "2000px" : "0px", opacity: showFullFilters ? 1 : 0 }}
         >
           <div className="max-w-7xl mx-auto px-6 pt-5 pb-4">
             {/* Row 1: IB Product Name + 1C/2C Product + Top Account Name + Pumpability */}
@@ -677,6 +842,7 @@ export function CriteriaResults() {
                 openDropdown={openDropdown}
                 setOpenDropdown={setOpenDropdown}
                 onChange={setSelected1C2CProduct}
+                singleSelect
               />
 
               <MultiSelectDropdown
@@ -748,6 +914,7 @@ export function CriteriaResults() {
                 openDropdown={openDropdown}
                 setOpenDropdown={setOpenDropdown}
                 onChange={setSelectedNVH}
+                singleSelect
               />
 
               <MultiSelectDropdown
