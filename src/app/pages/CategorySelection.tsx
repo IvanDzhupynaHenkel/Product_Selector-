@@ -7,8 +7,52 @@ import { motion, AnimatePresence } from "motion/react";
    Category data
 ───────────────────────────────────────── */
 
+// Import product images
+import imgInjectionMolding from "@/assets/f5bbb9685401a7e2e9ef867404325fa0f066a628.png";
+import imgCoating from "@/assets/491778134986b721123d331cd34cfe6f21e62f8c.png";
+import imgAdhesives from "@/assets/35c1d645ff7f65b99f9030a95c7b57b745badfd9.png";
+import imgPaperPackaging from "@/assets/04b353a53f3333b7d828e810bb826abcb3e194e9.png";
+import imgTapes from "@/assets/cc8ce243f333e4fec556526473e73b20466135cc.png";
+import imgLabels from "@/assets/8a9d5eb44904632d95a20a4e7d48ee87c5edebb6.png";
+import imgMedical from "@/assets/9e8ea2dfd2364d4602fce72f96f0034d3cff4e95.png";
+import imgGlass from "@/assets/9ddffa3ad2beea33967b553aca75973bb4892c1b.png";
+import imgEncapsulation from "@/assets/3d1f2275d600eda4256601e6a21faed0140945b5.png";
+import imgLamination from "@/assets/8fee2248c3024fea182c7009ab3bf09d8f5d92d9.png";
+
 // Map categories to images
-const categoryImages: Record<string, string> = {};
+const categoryImages: Record<string, string> = {
+  "Injection Molding": imgInjectionMolding,
+  "Coating": imgCoating,
+  "Adhesives": imgAdhesives,
+  "Paper Packaging": imgPaperPackaging,
+  "Tapes": imgTapes,
+  "Labels": imgLabels,
+  "Graphics": imgTapes,
+  "Medical": imgMedical,
+  "Thermosers Bonding Solution": imgGlass,
+  "Glass Bonding Solution": imgGlass,
+  "Alkaline Cleaners": imgCoating,
+  "High Pressure Casting": imgInjectionMolding,
+  "Gasketing": imgTapes,
+  "Potting": imgEncapsulation,
+  "Lamination": imgLamination,
+  "Medical Elector": imgMedical,
+  "E-Motor Gasketing": imgTapes,
+  "E-Motor Magnet Bonding": imgAdhesives,
+  "Fluid Management": imgCoating,
+  "Aerospace SMP": imgAdhesives,
+  "Silane Modified Polymers": imgAdhesives,
+  "Semi-Paste & Film": imgLamination,
+  "Semi-Encap & Underfill": imgEncapsulation,
+  "CD-Structural Adhesives": imgAdhesives,
+  "CD-Encap": imgEncapsulation,
+  "CD-Underfill": imgEncapsulation,
+  "CD-CAA": imgAdhesives,
+  "CD-Thermal": imgCoating,
+  "Thermal Management": imgCoating,
+  "AMO 2D": imgLamination,
+  "Forging": imgInjectionMolding,
+};
 
 const categories = [
   // AMO (Automotive OEMs)
