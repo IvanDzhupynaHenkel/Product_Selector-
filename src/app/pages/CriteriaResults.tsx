@@ -596,10 +596,6 @@ export function CriteriaResults() {
           style={{ maxHeight: scrolled ? "52px" : "0px", opacity: scrolled ? 1 : 0 }}
         >
           <div className="max-w-7xl mx-auto px-6 py-2.5 flex items-center gap-3">
-            <span className="text-sm font-medium text-slate-700 whitespace-nowrap flex-shrink-0">
-              {categoryDisplay}
-            </span>
-            <div className="w-px h-4 bg-slate-200 flex-shrink-0" />
             <div
               className="flex items-center gap-1.5 flex-1 min-w-0 overflow-x-auto"
               style={{ scrollbarWidth: "none" }}
