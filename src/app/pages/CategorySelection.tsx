@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router";
 import { Sparkles, X, ArrowRight, CheckCircle2, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
@@ -209,13 +209,6 @@ function buildSearchParams(p: ExtractedParams): URLSearchParams {
   return sp;
 }
 
-const EXAMPLE_PROMPTS = [
-  "1C pumpable adhesive for aluminum body-in-white at BMW",
-  "2C room temperature cure for CFRP chassis at Mercedes",
-  "High impact crash resistant 1C steel forging, Toyota",
-  "Non-pumpable high modulus adhesive, powertrain application",
-];
-
 const ANALYSIS_STEPS = [
   "Reading your request…",
   "Detecting product category…",
@@ -226,6 +219,22 @@ const ANALYSIS_STEPS = [
 /* ─────────────────────────────────────────
    AI Search Modal
 ───────────────────────────────────────── */
+const RECENT_PROMPTS_KEY = "ai_search_recent_prompts";
+
+function getRecentPrompts(): string[] {
+  try {
+    return JSON.parse(localStorage.getItem(RECENT_PROMPTS_KEY) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function saveRecentPrompt(prompt: string) {
+  const recent = getRecentPrompts().filter((p) => p !== prompt);
+  recent.unshift(prompt);
+  localStorage.setItem(RECENT_PROMPTS_KEY, JSON.stringify(recent.slice(0, 3)));
+}
+
 function AiSearchModal({ onClose }: { onClose: () => void }) {
   const navigate = useNavigate();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -234,6 +243,7 @@ function AiSearchModal({ onClose }: { onClose: () => void }) {
   const [phase, setPhase] = useState<"input" | "analyzing" | "results">("input");
   const [analysisStep, setAnalysisStep] = useState(0);
   const [extracted, setExtracted] = useState<ExtractedParams | null>(null);
+  const [recentPrompts, setRecentPrompts] = useState<string[]>(getRecentPrompts);
 
   // Auto-focus textarea on open
   useEffect(() => {
@@ -249,6 +259,8 @@ function AiSearchModal({ onClose }: { onClose: () => void }) {
 
   const handleSubmit = () => {
     if (!prompt.trim()) return;
+    saveRecentPrompt(prompt.trim());
+    setRecentPrompts(getRecentPrompts());
     setPhase("analyzing");
     setAnalysisStep(0);
 
@@ -361,22 +373,24 @@ function AiSearchModal({ onClose }: { onClose: () => void }) {
 
                 <p className="text-xs text-slate-400 mt-1 mb-4">⌘ + Enter to submit</p>
 
-                {/* Example prompts */}
-                <div className="mb-5">
-                  <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-2">Try an example</p>
-                  <div className="flex flex-col gap-1.5">
-                    {EXAMPLE_PROMPTS.map((ex) => (
-                      <button
-                        key={ex}
-                        onClick={() => handleExample(ex)}
-                        className="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-100 hover:border-slate-300 hover:bg-slate-50 transition-all group"
-                      >
-                        <ChevronRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-[#D4000E] flex-shrink-0 transition-colors" />
-                        <span className="text-xs text-slate-600 group-hover:text-slate-900 transition-colors">{ex}</span>
-                      </button>
-                    ))}
+                {/* Recent searches */}
+                {recentPrompts.length > 0 && (
+                  <div className="mb-5">
+                    <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-2">Recent searches</p>
+                    <div className="flex flex-col gap-1.5">
+                      {recentPrompts.map((ex) => (
+                        <button
+                          key={ex}
+                          onClick={() => handleExample(ex)}
+                          className="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-100 hover:border-slate-300 hover:bg-slate-50 transition-all group"
+                        >
+                          <ChevronRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-[#D4000E] flex-shrink-0 transition-colors" />
+                          <span className="text-xs text-slate-600 group-hover:text-slate-900 transition-colors line-clamp-1">{ex}</span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 <button
                   onClick={handleSubmit}

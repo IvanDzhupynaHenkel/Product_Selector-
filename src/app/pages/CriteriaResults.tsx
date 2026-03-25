@@ -186,27 +186,52 @@ function MultiSelectDropdown({
   onChange: (values: string[]) => void;
   singleSelect?: boolean;
 }) {
-  const chipContainerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const ghostRef = useRef<HTMLDivElement>(null);
   const [visibleCount, setVisibleCount] = useState(selectedValues.length);
 
   useEffect(() => {
-    const container = chipContainerRef.current;
-    if (!container || selectedValues.length === 0) {
-      setVisibleCount(selectedValues.length);
-      return;
-    }
-    // Measure how many chips fit in one row
-    const containerWidth = container.offsetWidth - 36; // reserve space for +N badge
-    const chipEls = Array.from(container.querySelectorAll<HTMLElement>("[data-chip]"));
-    let usedWidth = 0;
-    let count = 0;
-    for (const el of chipEls) {
-      const w = el.offsetWidth + 4; // 4px gap
-      if (usedWidth + w > containerWidth && count > 0) break;
-      usedWidth += w;
-      count++;
-    }
-    setVisibleCount(count);
+    const GAP = 4;
+
+    const measure = () => {
+      const container = containerRef.current;
+      const ghost = ghostRef.current;
+      if (!container || !ghost || selectedValues.length === 0) {
+        setVisibleCount(selectedValues.length);
+        return;
+      }
+
+      const availableWidth = container.offsetWidth;
+      const chipEls = Array.from(ghost.querySelectorAll<HTMLElement>("[data-ghost-chip]"));
+      const badgeEl = ghost.querySelector<HTMLElement>("[data-ghost-badge]");
+      const badgeWidth = badgeEl ? badgeEl.offsetWidth + GAP : 0;
+
+      const chipWidths = chipEls.map((el) => el.offsetWidth);
+      const totalWidth = chipWidths.reduce((sum, w, i) => sum + w + (i > 0 ? GAP : 0), 0);
+
+      if (totalWidth <= availableWidth) {
+        setVisibleCount(chipEls.length);
+        return;
+      }
+
+      let usedWidth = 0;
+      let count = 0;
+      for (let i = 0; i < chipWidths.length; i++) {
+        const w = chipWidths[i] + (i > 0 ? GAP : 0);
+        const remaining = chipWidths.length - (count + 1);
+        const reserve = remaining > 0 ? badgeWidth : 0;
+        if (usedWidth + w + reserve > availableWidth) break;
+        usedWidth += w;
+        count++;
+      }
+      setVisibleCount(Math.max(1, count));
+    };
+
+    measure();
+
+    const observer = new ResizeObserver(measure);
+    if (containerRef.current) observer.observe(containerRef.current);
+    return () => observer.disconnect();
   }, [selectedValues]);
 
   const toggleOption = (option: string) => {
@@ -219,11 +244,39 @@ function MultiSelectDropdown({
     }
   };
 
+  const hiddenCount = selectedValues.length - visibleCount;
+
   return (
     <div className="relative">
       <label className="block text-xs font-semibold mb-2 text-slate-600">
         {label}
       </label>
+
+      {/* Ghost container — invisible, used only for measuring chip widths */}
+      <div
+        ref={ghostRef}
+        aria-hidden="true"
+        className="absolute top-0 left-0 flex items-center gap-1 px-3 py-1.5 invisible pointer-events-none whitespace-nowrap"
+        style={{ zIndex: -1 }}
+      >
+        {selectedValues.map((v) => (
+          <span
+            key={v}
+            data-ghost-chip
+            className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 text-slate-700 text-xs rounded-full"
+          >
+            {v}
+            <span className="leading-none">×</span>
+          </span>
+        ))}
+        <span
+          data-ghost-badge
+          className="inline-flex items-center px-2 py-0.5 bg-slate-100 text-slate-700 text-xs rounded-full"
+        >
+          +{selectedValues.length}
+        </span>
+      </div>
+
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -231,16 +284,15 @@ function MultiSelectDropdown({
         }}
         className="w-full min-h-[36px] px-3 py-1.5 bg-white border border-slate-200 rounded-lg flex items-center justify-between gap-2 hover:border-slate-400 transition-colors text-sm"
       >
-        <div ref={chipContainerRef} className="flex items-center gap-1 flex-1 min-w-0 overflow-hidden">
+        <div ref={containerRef} className="flex items-center gap-1 flex-1 min-w-0 overflow-hidden">
           {selectedValues.length === 0 ? (
             <span className="text-slate-400">All</span>
           ) : (
             <>
-              {selectedValues.map((v, i) => (
+              {selectedValues.slice(0, visibleCount).map((v) => (
                 <span
                   key={v}
-                  data-chip
-                  className={`inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 text-slate-700 text-xs rounded-full whitespace-nowrap flex-shrink-0 ${i >= visibleCount ? "hidden" : ""}`}
+                  className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 text-slate-700 text-xs rounded-full whitespace-nowrap flex-shrink-0"
                 >
                   {v}
                   <span
@@ -255,9 +307,16 @@ function MultiSelectDropdown({
                   </span>
                 </span>
               ))}
-              {visibleCount < selectedValues.length && (
-                <span className="inline-flex items-center px-2 py-0.5 bg-slate-200 text-slate-600 text-xs rounded-full whitespace-nowrap flex-shrink-0">
-                  +{selectedValues.length - visibleCount}
+              {hiddenCount > 0 && (
+                <span
+                  role="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setOpenDropdown(id);
+                  }}
+                  className="inline-flex items-center px-2 py-0.5 bg-slate-100 text-slate-700 text-xs rounded-full whitespace-nowrap flex-shrink-0 cursor-pointer hover:bg-slate-200"
+                >
+                  +{hiddenCount}
                 </span>
               )}
             </>
@@ -758,46 +817,53 @@ export function CriteriaResults() {
         {/* ── Condensed bar — visible only when scrolled ── */}
         <div
           className="overflow-hidden transition-all duration-200 ease-in-out"
-          style={{ maxHeight: scrolled ? "52px" : "0px", opacity: scrolled ? 1 : 0 }}
+          style={{ maxHeight: scrolled ? "200px" : "0px", opacity: scrolled ? 1 : 0 }}
         >
-          <div className="max-w-7xl mx-auto px-6 py-2.5 flex items-center gap-3">
-            <div
-              className="flex items-center gap-1.5 flex-1 min-w-0 overflow-x-auto"
-              style={{ scrollbarWidth: "none" }}
-            >
+          <div className="max-w-7xl mx-auto px-6 py-2.5 flex items-start gap-3">
+            <div className="flex items-center gap-1.5 flex-1 min-w-0 flex-wrap">
               {hasActiveFilters ? (
                 activeChips.map((chip) => (
                   <div
                     key={chip.key}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-50 border border-red-100 rounded-full whitespace-nowrap flex-shrink-0"
+                    className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 border border-slate-200 rounded-full whitespace-nowrap"
                   >
-                    <span className="text-xs text-[#D4000E]">{chip.label}</span>
-                    <button onClick={chip.clear} className="hover:bg-red-100 rounded-full p-0.5">
-                      <X className="w-2.5 h-2.5 text-[#D4000E]" />
+                    <span className="text-xs text-slate-700">{chip.label}</span>
+                    <button onClick={chip.clear} className="hover:bg-slate-200 rounded-full p-0.5">
+                      <X className="w-2.5 h-2.5 text-slate-500" />
                     </button>
                   </div>
                 ))
               ) : (
                 <span className="text-xs text-slate-400 italic">No filters active</span>
               )}
-            </div>
-            <button
-              onClick={() => setFiltersExpanded((v) => !v)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors whitespace-nowrap flex-shrink-0 ${
-                filtersExpanded
-                  ? "border-[#D4000E]/30 bg-red-50 text-[#D4000E]"
-                  : "border-slate-200 text-slate-600 hover:border-slate-400 hover:text-slate-800"
-              }`}
-            >
-              <SlidersHorizontal className="w-3.5 h-3.5" />
-              {filtersExpanded ? "Hide filters" : "Filters"}
-              {hasActiveFilters && !filtersExpanded && (
-                <span className="w-1.5 h-1.5 rounded-full bg-[#D4000E] ml-0.5" />
+              {hasActiveFilters && (
+                <button
+                  onClick={clearAllFilters}
+                  className="text-xs text-slate-400 hover:text-[#D4000E] transition-colors whitespace-nowrap underline underline-offset-2"
+                >
+                  Clear all
+                </button>
               )}
-            </button>
-            <span className="text-xs text-slate-400 whitespace-nowrap flex-shrink-0 tabular-nums">
-              {products.length} products
-            </span>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0 pt-0.5">
+              <button
+                onClick={() => setFiltersExpanded((v) => !v)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors whitespace-nowrap ${
+                  filtersExpanded
+                    ? "border-[#D4000E]/30 bg-red-50 text-[#D4000E]"
+                    : "border-slate-200 text-slate-600 hover:border-slate-400 hover:text-slate-800"
+                }`}
+              >
+                <SlidersHorizontal className="w-3.5 h-3.5" />
+                {filtersExpanded ? "Hide filters" : "Filters"}
+                {hasActiveFilters && !filtersExpanded && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#D4000E] ml-0.5" />
+                )}
+              </button>
+              <span className="text-xs text-slate-400 whitespace-nowrap tabular-nums">
+                {products.length} products
+              </span>
+            </div>
           </div>
         </div>
 
@@ -1063,7 +1129,7 @@ export function CriteriaResults() {
                   <div
                     key={product.id}
                     className={`bg-white rounded-[14px] border hover:shadow-md transition-all relative ${
-                      isSelected ? "border-[#5EE9B5] border-2" : "border-slate-200"
+                      isSelected ? "border-[#1a2332] border-2" : "border-slate-200"
                     }`}
                   >
                     {/* Comparison checkbox */}
@@ -1075,8 +1141,8 @@ export function CriteriaResults() {
                       }}
                       className={`absolute top-5 right-5 z-10 w-5 h-5 rounded flex items-center justify-center transition-colors ${
                         isSelected
-                          ? "bg-[#5EE9B5] border-2 border-[#5EE9B5]"
-                          : "bg-white border-2 border-slate-300 hover:border-[#5EE9B5]"
+                          ? "bg-[#1a2332] border-2 border-[#1a2332]"
+                          : "bg-white border-2 border-slate-300 hover:border-[#1a2332]"
                       }`}
                     >
                       {isSelected && (
@@ -1389,8 +1455,8 @@ export function CriteriaResults() {
                             onClick={() => toggleProductComparison(product.id)}
                             className={`w-4 h-4 rounded flex items-center justify-center transition-colors ${
                               isSelected
-                                ? "bg-[#5EE9B5] border-2 border-[#5EE9B5]"
-                                : "bg-white border-2 border-slate-300 hover:border-[#5EE9B5]"
+                                ? "bg-[#1a2332] border-2 border-[#1a2332]"
+                                : "bg-white border-2 border-slate-300 hover:border-[#1a2332]"
                             }`}
                           >
                             {isSelected && (
