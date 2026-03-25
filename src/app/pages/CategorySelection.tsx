@@ -29,7 +29,7 @@ const categoryImages: Record<string, string> = {
   "Labels": imgLabels,
   "Graphics": imgTapes,
   "Medical": imgMedical,
-  "Thermosers Bonding Solution": imgLamination,
+  "Thermosets Bonding Solution": imgLamination,
   "Glass Bonding Solution": imgGlass,
   "Alkaline Cleaners": imgCoating,
   "High Pressure Casting": imgInjectionMolding,
@@ -56,7 +56,7 @@ const categoryImages: Record<string, string> = {
 
 const categories = [
   // AMO (Automotive OEMs)
-  { businessUnit: "AMO", businessUnitFull: "AMO - Automotive OEMs", name: "Thermosers Bonding Solution", productCount: 34, regional: "Global" },
+  { businessUnit: "AMO", businessUnitFull: "AMO - Automotive OEMs", name: "Thermosets Bonding Solution", productCount: 34, regional: "Global" },
   { businessUnit: "AMO", businessUnitFull: "AMO - Automotive OEMs", name: "Glass Bonding Solution", productCount: 27, regional: "Global" },
   
   // APP Flexible Packaging
@@ -131,8 +131,8 @@ type ExtractedParams = {
 
 function extractFromPrompt(prompt: string): ExtractedParams {
   const lower = prompt.toLowerCase();
-  // Default to Thermosers Bonding Solution — most queries are about structural adhesives
-  const result: ExtractedParams = { category: "thermosers-bonding-solution", categoryDisplay: "Thermosers Bonding Solution" };
+  // Default to Thermosets Bonding Solution — most queries are about structural adhesives
+  const result: ExtractedParams = { category: "thermosets-bonding-solution", categoryDisplay: "Thermosets Bonding Solution" };
 
   // Category — most specific patterns first
   if (/carbon.?fiber|cfrp composite/.test(lower))          { result.category = "carbon-fiber";             result.categoryDisplay = "ACM Carbon Fiber"; }
@@ -143,7 +143,7 @@ function extractFromPrompt(prompt: string): ExtractedParams {
   else if (/sand.?cast/.test(lower))                        { result.category = "sand-casting";             result.categoryDisplay = "AMC Sand Casting"; }
   else if (/investment.?cast/.test(lower))                  { result.category = "investment-casting";       result.categoryDisplay = "AMC Investment Casting"; }
   else if (/glass.?bond/.test(lower))                       { result.category = "glass-bonding-solution";   result.categoryDisplay = "AMO Glass Bonding"; }
-  else if (/thermoset|structural.*bond|epoxy|methacrylate|adhesive|bonding/.test(lower)) { result.category = "thermosers-bonding-solution"; result.categoryDisplay = "Thermosers Bonding Solution"; }
+  else if (/thermoset|structural.*bond|epoxy|methacrylate|adhesive|bonding/.test(lower)) { result.category = "thermosets-bonding-solution"; result.categoryDisplay = "Thermosets Bonding Solution"; }
   else if (/injection.?mold/.test(lower))                   { result.category = "injection-molding";        result.categoryDisplay = "APP Injection Molding"; }
   else if (/extrus/.test(lower))                            { result.category = "extrusion";                result.categoryDisplay = "APP Extrusion"; }
   else if (/thermoform/.test(lower))                        { result.category = "thermoforming";            result.categoryDisplay = "APP Thermoforming"; }

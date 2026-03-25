@@ -3,6 +3,7 @@ import { useParams, useSearchParams, useNavigate } from "react-router";
 import { ChevronDown, X, Search, LayoutGrid, List, ArrowLeft, SlidersHorizontal, Loader2 } from "lucide-react";
 import { ProductComparison } from "../components/ProductComparison";
 import { projectId, publicAnonKey } from '/utils/supabase/info';
+import imgGlassBonding from "@/assets/156.jpg";
 
 // Coatings & Adhesives Product Type
 type CoatingsAdhesivesProduct = {
@@ -539,28 +540,28 @@ function RangeSlider({
       <label className="block text-xs font-semibold mb-2 text-slate-600">
         {label}
       </label>
-      <div className="bg-white border border-slate-200 rounded-lg px-3 py-3">
+      <div className="px-1 py-1">
         {/* Min and Max value display at top corners */}
         <div className="flex items-center justify-between mb-3">
           <span className="text-xs font-medium text-slate-900">{localMin.toFixed(1)}</span>
           <span className="text-xs font-medium text-slate-900">{localMax.toFixed(1)}</span>
         </div>
         
-        {/* Slider container */}
-        <div className="relative h-1 mb-2">
-          {/* Background track */}
-          <div className="absolute w-full h-1 bg-slate-200 rounded" />
-          
+        {/* Slider container — h-5 so thumb (h-4) fits without overflow */}
+        <div className="relative h-5 mx-[10px]">
+          {/* Background track — centered vertically */}
+          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1 bg-slate-200 rounded" />
+
           {/* Active range track */}
           <div
-            className="absolute h-1 bg-slate-400 rounded"
+            className="absolute top-1/2 -translate-y-1/2 h-1 bg-slate-400 rounded"
             style={{
               left: `${((localMin - min) / (max - min)) * 100}%`,
               right: `${100 - ((localMax - min) / (max - min)) * 100}%`,
             }}
           />
-          
-          {/* Min slider (invisible, for interaction) */}
+
+          {/* Min slider */}
           <input
             type="range"
             min={min}
@@ -568,11 +569,11 @@ function RangeSlider({
             step={step}
             value={localMin}
             onChange={handleMinChange}
-            className="absolute w-full h-1 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-slate-400 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-sm [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-slate-400 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:shadow-sm"
+            className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-slate-400 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-sm [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-slate-400 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:shadow-sm"
             style={{ zIndex: localMin > max - (max - min) * 0.1 ? 5 : 3 }}
           />
-          
-          {/* Max slider (invisible, for interaction) */}
+
+          {/* Max slider */}
           <input
             type="range"
             min={min}
@@ -580,7 +581,7 @@ function RangeSlider({
             step={step}
             value={localMax}
             onChange={handleMaxChange}
-            className="absolute w-full h-1 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-slate-400 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-sm [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-slate-400 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:shadow-sm"
+            className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-slate-400 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-sm [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-slate-400 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:shadow-sm"
             style={{ zIndex: 4 }}
           />
         </div>
@@ -1364,67 +1365,74 @@ export function CriteriaResults() {
         {/* ── Left sidebar — glass bonding only ── */}
         {isGlassBonding && (
           <div
-            className="w-72 bg-white flex-shrink-0 overflow-y-auto px-4 py-5 space-y-4"
+            className="w-72 flex-shrink-0 overflow-y-auto bg-[#F5F5F7] pl-[14px] pr-[14px] py-5"
             onClick={(e) => e.stopPropagation()}
           >
-            <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 pb-1">Filters</p>
+            {/* Floating filter card */}
+            <div className="bg-white rounded-2xl shadow-[0_2px_16px_rgba(0,0,0,0.08)] px-4 py-5 space-y-4">
+              <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 pb-1">Filters</p>
 
-            {/* Search */}
-            <div>
-              <label className="block text-xs font-semibold mb-1.5 text-slate-600">IB Product Name</label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
-                <input
-                  type="text"
-                  value={productSearch}
-                  onChange={(e) => setProductSearch(e.target.value)}
-                  placeholder="Search..."
-                  className="w-full pl-8 pr-8 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 placeholder:text-slate-400 hover:border-slate-400 focus:outline-none focus:border-slate-600 transition-colors"
-                />
-                {productSearch && (
-                  <button onClick={() => setProductSearch("")} className="absolute right-2 top-1/2 -translate-y-1/2">
-                    <X className="w-3.5 h-3.5 text-slate-400 hover:text-slate-600" />
-                  </button>
-                )}
-              </div>
-            </div>
-
-            <MultiSelectDropdown id="sb-oneCTwoC" label="1C/2C Product" selectedValues={selected1C2CProduct} options={["1C", "2C"]} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} onChange={setSelected1C2CProduct} singleSelect />
-            <MultiSelectDropdown id="sb-productCat" label="Product Category" selectedValues={selectedEndUses} options={["Adhesive", "Primer", "Cleaner"]} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} onChange={setSelectedEndUses} />
-            <MultiSelectDropdown id="sb-cureCondition" label="Cure Condition" selectedValues={selectedCureConditions} options={["-40 to 90°C in service"]} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} onChange={setSelectedCureConditions} />
-            <MultiSelectDropdown id="sb-ibSegment" label="IB Segment" selectedValues={selectedIBSegments} options={filterOptions.ib_segment} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} onChange={setSelectedIBSegments} />
-            <MultiSelectDropdown id="sb-topAccount" label="Top Account Name" selectedValues={selectedTopAccounts} options={filterOptions.top_account_name} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} onChange={setSelectedTopAccounts} />
-
-            {/* Range sliders */}
-            <div className="bg-[#F8F8F8] rounded-xl p-3 space-y-4">
-              <RangeSlider label="Tensile Strength [MPa]" min={2.5} max={12.0} step={0.1} values={lapShearRange} onChange={setLapShearRange} />
-              <RangeSlider label="Shear Modulus G10 [MPa]" min={0.5} max={4.0} step={0.1} values={eModulusRange} onChange={setEModulusRange} />
-            </div>
-
-            {/* Active chips */}
-            {hasActiveFilters && (
-              <div className="pt-1 space-y-2">
-                <div className="flex flex-wrap gap-1.5">
-                  {activeChips.map((chip) => (
-                    <div key={chip.key} className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 border border-slate-200 rounded-full">
-                      <span className="text-xs text-slate-700">{chip.label}</span>
-                      <button onClick={chip.clear} className="hover:bg-slate-200 rounded-full p-0.5">
-                        <X className="w-2.5 h-2.5 text-slate-500" />
-                      </button>
-                    </div>
-                  ))}
+              {/* Search */}
+              <div>
+                <label className="block text-xs font-semibold mb-1.5 text-slate-600">IB Product Name</label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                  <input
+                    type="text"
+                    value={productSearch}
+                    onChange={(e) => setProductSearch(e.target.value)}
+                    placeholder="Search..."
+                    className="w-full pl-8 pr-8 py-2 bg-[#F5F5F7] border-0 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all"
+                  />
+                  {productSearch && (
+                    <button onClick={() => setProductSearch("")} className="absolute right-2 top-1/2 -translate-y-1/2">
+                      <X className="w-3.5 h-3.5 text-slate-400 hover:text-slate-600" />
+                    </button>
+                  )}
                 </div>
-                <button onClick={clearAllFilters} className="text-xs text-slate-400 hover:text-[#D4000E] transition-colors underline underline-offset-2">
-                  Clear all
-                </button>
               </div>
-            )}
+
+              <MultiSelectDropdown id="sb-oneCTwoC" label="1C/2C Product" selectedValues={selected1C2CProduct} options={["1C", "2C"]} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} onChange={setSelected1C2CProduct} singleSelect />
+              <MultiSelectDropdown id="sb-productCat" label="Product Category" selectedValues={selectedEndUses} options={["Adhesive", "Primer", "Cleaner"]} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} onChange={setSelectedEndUses} />
+              <MultiSelectDropdown id="sb-cureCondition" label="Cure Condition" selectedValues={selectedCureConditions} options={["-40 to 90°C in service"]} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} onChange={setSelectedCureConditions} />
+              <MultiSelectDropdown id="sb-ibSegment" label="IB Segment" selectedValues={selectedIBSegments} options={filterOptions.ib_segment} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} onChange={setSelectedIBSegments} />
+              <MultiSelectDropdown id="sb-topAccount" label="Top Account Name" selectedValues={selectedTopAccounts} options={filterOptions.top_account_name} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} onChange={setSelectedTopAccounts} />
+
+              {/* Range sliders */}
+              <div className="pt-1 space-y-4">
+                <div className="bg-[#F5F5F7] rounded-xl px-5 py-3">
+                  <RangeSlider label="Tensile Strength [MPa]" min={2.5} max={12.0} step={0.1} values={lapShearRange} onChange={setLapShearRange} />
+                </div>
+                <div className="bg-[#F5F5F7] rounded-xl px-5 py-3">
+                  <RangeSlider label="Shear Modulus G10 [MPa]" min={0.5} max={4.0} step={0.1} values={eModulusRange} onChange={setEModulusRange} />
+                </div>
+              </div>
+
+              {/* Active chips */}
+              {hasActiveFilters && (
+                <div className="pt-2 border-t border-slate-100 space-y-2">
+                  <div className="flex flex-wrap gap-1.5">
+                    {activeChips.map((chip) => (
+                      <div key={chip.key} className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 rounded-full">
+                        <span className="text-xs text-slate-700">{chip.label}</span>
+                        <button onClick={chip.clear} className="hover:bg-slate-200 rounded-full p-0.5">
+                          <X className="w-2.5 h-2.5 text-slate-500" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <button onClick={clearAllFilters} className="text-xs text-slate-400 hover:text-[#D4000E] transition-colors underline underline-offset-2">
+                    Clear all
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
         {/* Results area */}
         <div ref={resultsScrollRef} className="flex-1 overflow-y-auto bg-[#F5F5F7]">
-          <div className={isGlassBonding ? "px-6 py-6" : "max-w-7xl mx-auto px-6 py-6"}>
+          <div className={isGlassBonding ? "pl-6 pr-[120px] py-6" : "max-w-7xl mx-auto pl-6 pr-[120px] py-6"}>
           {/* Results header - count + view toggle */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
@@ -1546,10 +1554,8 @@ export function CriteriaResults() {
                       {/* Top section - Product header */}
                       <div className="flex gap-4 items-start p-5 pr-14">
                         {/* Product image */}
-                        <div className="relative rounded-[10px] shrink-0 size-[80px] bg-slate-100 flex items-center justify-center">
-                          <div className="text-slate-400 text-xs text-center px-2">
-                            {product.ib_product_code || "No image"}
-                          </div>
+                        <div className="relative rounded-[10px] shrink-0 size-[80px] bg-slate-100 flex items-center justify-center overflow-hidden">
+                          <img src={imgGlassBonding} alt={product.ib_product_name || ""} className="w-full h-full object-contain" />
                         </div>
 
                         {/* Product info */}
