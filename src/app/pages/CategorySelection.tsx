@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router";
 import { Sparkles, X, ArrowRight, CheckCircle2, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
@@ -15,7 +15,7 @@ import imgPaperPackaging from "@/assets/04b353a53f3333b7d828e810bb826abcb3e194e9
 import imgTapes from "@/assets/cc8ce243f333e4fec556526473e73b20466135cc.png";
 import imgLabels from "@/assets/8a9d5eb44904632d95a20a4e7d48ee87c5edebb6.png";
 import imgMedical from "@/assets/9e8ea2dfd2364d4602fce72f96f0034d3cff4e95.png";
-import imgGlass from "@/assets/9ddffa3ad2beea33967b553aca75973bb4892c1b.png";
+import imgGlass from "@/assets/Glass Bonding Solution.png";
 import imgEncapsulation from "@/assets/3d1f2275d600eda4256601e6a21faed0140945b5.png";
 import imgLamination from "@/assets/8fee2248c3024fea182c7009ab3bf09d8f5d92d9.png";
 
@@ -29,7 +29,7 @@ const categoryImages: Record<string, string> = {
   "Labels": imgLabels,
   "Graphics": imgTapes,
   "Medical": imgMedical,
-  "Thermosers Bonding Solution": imgGlass,
+  "Thermosers Bonding Solution": imgLamination,
   "Glass Bonding Solution": imgGlass,
   "Alkaline Cleaners": imgCoating,
   "High Pressure Casting": imgInjectionMolding,
@@ -131,9 +131,10 @@ type ExtractedParams = {
 
 function extractFromPrompt(prompt: string): ExtractedParams {
   const lower = prompt.toLowerCase();
-  const result: ExtractedParams = { category: "forging", categoryDisplay: "AMC Forging" };
+  // Default to Thermosers Bonding Solution — most queries are about structural adhesives
+  const result: ExtractedParams = { category: "thermosers-bonding-solution", categoryDisplay: "Thermosers Bonding Solution" };
 
-  // Category
+  // Category — most specific patterns first
   if (/carbon.?fiber|cfrp composite/.test(lower))          { result.category = "carbon-fiber";             result.categoryDisplay = "ACM Carbon Fiber"; }
   else if (/glass.?fiber/.test(lower))                      { result.category = "glass-fiber";              result.categoryDisplay = "ACM Glass Fiber"; }
   else if (/hybrid.?material/.test(lower))                  { result.category = "hybrid-materials";         result.categoryDisplay = "ACM Hybrid Materials"; }
@@ -142,7 +143,7 @@ function extractFromPrompt(prompt: string): ExtractedParams {
   else if (/sand.?cast/.test(lower))                        { result.category = "sand-casting";             result.categoryDisplay = "AMC Sand Casting"; }
   else if (/investment.?cast/.test(lower))                  { result.category = "investment-casting";       result.categoryDisplay = "AMC Investment Casting"; }
   else if (/glass.?bond/.test(lower))                       { result.category = "glass-bonding-solution";   result.categoryDisplay = "AMO Glass Bonding"; }
-  else if (/thermoset|structural.*bond/.test(lower))        { result.category = "thermosers-bonding-solution"; result.categoryDisplay = "AMO Thermosers Bonding"; }
+  else if (/thermoset|structural.*bond|epoxy|methacrylate|adhesive|bonding/.test(lower)) { result.category = "thermosers-bonding-solution"; result.categoryDisplay = "Thermosers Bonding Solution"; }
   else if (/injection.?mold/.test(lower))                   { result.category = "injection-molding";        result.categoryDisplay = "APP Injection Molding"; }
   else if (/extrus/.test(lower))                            { result.category = "extrusion";                result.categoryDisplay = "APP Extrusion"; }
   else if (/thermoform/.test(lower))                        { result.category = "thermoforming";            result.categoryDisplay = "APP Thermoforming"; }
@@ -152,43 +153,64 @@ function extractFromPrompt(prompt: string): ExtractedParams {
   if (/\b1[- ]?c\b|one.?component|single.?component/.test(lower))  result.oneTwoC = "1C";
   else if (/\b2[- ]?c\b|two.?component|dual.?component/.test(lower)) result.oneTwoC = "2C";
 
-  // Top account
-  const accountMap: Record<string, string> = {
-    bmw: "BMW", mercedes: "Mercedes", volkswagen: "Volkswagen", "\bvw\b": "Volkswagen",
-    ford: "Ford", toyota: "Toyota", stellantis: "Stellantis",
-  };
-  for (const [key, val] of Object.entries(accountMap)) {
-    if (new RegExp(key).test(lower)) { result.topAccount = val; break; }
+  // Top account + IB segment — same OEM detection drives both
+  const oemMap: Array<[RegExp, string, string]> = [
+    [/\bbmw\b/,                       "BMW",        "AM BMW"],
+    [/mercedes|amg/,                  "Mercedes",   "AM Mercedes"],
+    [/\bvw\b|volkswagen/,             "VW Group",   "AM VW-Group"],
+    [/\bford\b/,                      "Ford",       "AM Ford-Group"],
+    [/toyota/,                        "Toyota",     "AM Toyota"],
+    [/stellantis|psa|opel|fiat/,      "Stellantis", "AM Stellantis"],
+    [/hyundai/,                       "Hyundai",    "AM Hyundai-Group"],
+    [/\bkia\b/,                       "Kia",        "AM Hyundai-Group"],
+    [/geely/,                         "Geely",      "AM Geely / Volvo"],
+    [/\bvolvo\b/,                     "Volvo",      "AM Geely / Volvo"],
+    [/\bgm\b|general motors|chevrolet/, "GM",       "AM GM Group"],
+    [/tesla/,                         "Tesla",      "AM Tesla"],
+    [/renault/,                       "Renault",    "AM Renault-Nissan"],
+    [/nissan/,                        "Nissan",     "AM Renault-Nissan"],
+    [/\bjlr\b|jaguar|land rover/,     "JLR",        "AM JLR"],
+    [/\bbyd\b/,                       "BYD",        "AM BYD"],
+    [/\bnio\b/,                       "NIO",        "AM Chinese OEMs"],
+    [/chinese oem/,                   "Chinese OEMs","AM Chinese OEMs"],
+  ];
+  for (const [pattern, account, segment] of oemMap) {
+    if (pattern.test(lower)) {
+      result.topAccount = account;
+      result.ibSegment = segment;
+      break;
+    }
   }
 
-  // Substrate
-  const subMap: Record<string, string> = {
-    "alumini?um": "Aluminum", "\bsteel\b": "Steel", "cast iron": "Cast Iron",
-    magnesium: "Magnesium", titanium: "Titanium", "\bsmc\b": "SMC", "\bcfrp\b": "CFRP",
-  };
-  for (const [key, val] of Object.entries(subMap)) {
-    if (new RegExp(key).test(lower)) { result.substrate = val; break; }
+  // Substrate — map to exact option strings
+  const subMap: Array<[RegExp, string]> = [
+    [/\balumini?um\b/,          "Aluminum"],
+    [/cold.?rolled.?steel|crs/, "Cold Rolled Steel (CRS)"],
+    [/galvanized.?steel|hdg/,   "Hot-Dip Galvanized Steel"],
+    [/galvannealed/,            "Galvannealed Steel"],
+    [/zinc.*magnesium/,         "Zinc/Magnesium Surfaces"],
+    [/zinc/,                    "Zinc Coated Surfaces"],
+    [/oily/,                    "Oily Substrates"],
+    [/painted.?metal/,          "Painted Metal"],
+    [/thermoset.*composit/,     "Thermosets Composites"],
+    [/\bplastic/,               "Plastics"],
+    [/\bcfrp\b/,                "CFRP"],
+    [/\bgfrp\b/,                "GFRP"],
+    [/\bsteel\b/,               "Cold Rolled Steel (CRS)"],
+  ];
+  for (const [pattern, val] of subMap) {
+    if (pattern.test(lower)) { result.substrate = val; break; }
   }
 
-  // Pumpability
-  if (/non.?pumpable/.test(lower))            result.pumpability = "Non-pumpable";
-  else if (/high.?viscosity/.test(lower))     result.pumpability = "High viscosity";
-  else if (/low.?viscosity/.test(lower))      result.pumpability = "Low viscosity";
-  else if (/pump/.test(lower))                result.pumpability = "Pumpable";
+  // Pumpability — exact option strings
+  if (/non.?pumpable|paste|film/.test(lower))   result.pumpability = "Warm Temperature Pumpability";
+  else if (/pump/.test(lower))                   result.pumpability = "Room Temperature Pumpability";
 
-  // Cure condition
-  if (/room.?temp|rt.?cure|\brt\b/.test(lower))       result.cureCondition = "Room Temperature";
-  else if (/80.?[°c]|heat.?80/.test(lower))           result.cureCondition = "Heat Cure 80°C";
-  else if (/120.?[°c]|heat.?120/.test(lower))         result.cureCondition = "Heat Cure 120°C";
-  else if (/\buv\b/.test(lower))                       result.cureCondition = "UV Cure";
-  else if (/moisture/.test(lower))                     result.cureCondition = "Moisture Cure";
-
-  // IB Segment
-  if (/body.?in.?white|\bbiw\b/.test(lower))  result.ibSegment = "Body-in-White";
-  else if (/powertrain/.test(lower))           result.ibSegment = "Powertrain";
-  else if (/chassis/.test(lower))             result.ibSegment = "Chassis";
-  else if (/interior/.test(lower))            result.ibSegment = "Interior";
-  else if (/exterior/.test(lower))            result.ibSegment = "Exterior";
+  // Cure condition — exact option strings
+  if (/room.?temp|ambient|rt.?cure|\brt\b/.test(lower))    result.cureCondition = "Room Temperature Cure";
+  else if (/\b[<]?\s*80\s*[°c]|low.?temp/i.test(lower))   result.cureCondition = "Low Temperature Cure (< 80°C)";
+  else if (/120|standard.?temp/i.test(lower))              result.cureCondition = "Standard Temperature Cure (80–150°C)";
+  else if (/150|180|high.?temp/i.test(lower))              result.cureCondition = "High Temperature Cure (> 150°C)";
 
   // Product name
   const m = lower.match(/teroson[\s-]ep[\s-]\d+/);
@@ -587,7 +609,7 @@ export function CategorySelection() {
                           <img 
                             src={categoryImage} 
                             alt={category.name}
-                            className="h-full w-full object-cover shadow-sm"
+                            className="h-full w-full object-contain shadow-sm"
                           />
                         </div>
                       )}

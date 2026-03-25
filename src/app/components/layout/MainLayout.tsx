@@ -2,7 +2,6 @@ import { Outlet, Link } from "react-router";
 import { User, Globe, ChevronDown } from "lucide-react";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
 import henkelLogo from "../../../imports/henkel-logo-standalone-svg.svg";
-import { RecentItemsSidebar } from "./RecentItemsSidebar";
 import { useState, useRef, useEffect } from "react";
 
 export function MainLayout() {
@@ -88,7 +87,6 @@ export function MainLayout() {
           <main className="flex-1 overflow-y-auto bg-slate-50">
             <Outlet />
           </main>
-          <RecentItemsSidebar />
         </div>
       </div>
     </div>

@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router";
 import { ChevronDown, X, Search, LayoutGrid, List, ArrowLeft, SlidersHorizontal, Loader2 } from "lucide-react";
-import { useRecentItems } from "../contexts/RecentItemsContext";
 import { ProductComparison } from "../components/ProductComparison";
 import { projectId, publicAnonKey } from '/utils/supabase/info';
 
@@ -443,19 +442,30 @@ export function CriteriaResults() {
   const { category } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { addRecentItem } = useRecentItems();
 
-  // State for filters
+  // State for filters — initialised from URL search params set by Smart Search
   const [productSearch, setProductSearch] = useState(searchParams.get("productSearch") ?? "");
   const [selectedABCClasses, setSelectedABCClasses] = useState<string[]>([]);
   const [selectedEndUses, setSelectedEndUses] = useState<string[]>([]);
-  const [selected1C2CProduct, setSelected1C2CProduct] = useState<string[]>([]);
-  const [selectedTopAccounts, setSelectedTopAccounts] = useState<string[]>([]);
-  const [selectedPumpability, setSelectedPumpability] = useState<string[]>([]);
-  const [selectedSubstrates, setSelectedSubstrates] = useState<string[]>([]);
-  const [selectedCureConditions, setSelectedCureConditions] = useState<string[]>([]);
+  const [selected1C2CProduct, setSelected1C2CProduct] = useState<string[]>(
+    searchParams.get("oneTwoC") ? [searchParams.get("oneTwoC")!] : []
+  );
+  const [selectedTopAccounts, setSelectedTopAccounts] = useState<string[]>(
+    searchParams.get("topAccount") ? [searchParams.get("topAccount")!] : []
+  );
+  const [selectedPumpability, setSelectedPumpability] = useState<string[]>(
+    searchParams.get("pumpability") ? [searchParams.get("pumpability")!] : []
+  );
+  const [selectedSubstrates, setSelectedSubstrates] = useState<string[]>(
+    searchParams.get("substrate") ? [searchParams.get("substrate")!] : []
+  );
+  const [selectedCureConditions, setSelectedCureConditions] = useState<string[]>(
+    searchParams.get("cureCondition") ? [searchParams.get("cureCondition")!] : []
+  );
   const [selectedNVH, setSelectedNVH] = useState<string[]>([]);
-  const [selectedIBSegments, setSelectedIBSegments] = useState<string[]>([]);
+  const [selectedIBSegments, setSelectedIBSegments] = useState<string[]>(
+    searchParams.get("ibSegment") ? [searchParams.get("ibSegment")!] : []
+  );
   
   // Range filters
   const [lapShearRange, setLapShearRange] = useState<[number, number]>([2.5, 35.0]);
@@ -706,6 +716,84 @@ export function CriteriaResults() {
           );
         }
 
+        // Apply 1C/2C filter
+        if (selected1C2CProduct.length > 0) {
+          fetchedProducts = fetchedProducts.filter((p: CoatingsAdhesivesProduct) =>
+            p.one_c_two_c_product && selected1C2CProduct.includes(p.one_c_two_c_product)
+          );
+        }
+
+        // Apply Top Account filter (partial match — field contains semicolon-separated values)
+        if (selectedTopAccounts.length > 0) {
+          fetchedProducts = fetchedProducts.filter((p: CoatingsAdhesivesProduct) =>
+            p.top_account_name &&
+            selectedTopAccounts.some((acc) =>
+              p.top_account_name!.toLowerCase().includes(acc.toLowerCase())
+            )
+          );
+        }
+
+        // Apply Pumpability filter
+        // "Room Temperature Pumpability" → pumpable at RT; "Warm Temperature Pumpability" → needs heating
+        if (selectedPumpability.length > 0) {
+          const pumpMap: Record<string, RegExp> = {
+            "Room Temperature Pumpability": /^pumpable$|room\s*temp\s*pump/i,
+            "Warm Temperature Pumpability": /warm|heat|non.?pumpable/i,
+          };
+          fetchedProducts = fetchedProducts.filter((p: CoatingsAdhesivesProduct) =>
+            p.pumpability &&
+            selectedPumpability.some((val) => {
+              const pattern = pumpMap[val];
+              return pattern ? pattern.test(p.pumpability!) : p.pumpability!.toLowerCase().includes(val.toLowerCase());
+            })
+          );
+        }
+
+        // Apply Substrates filter (partial match)
+        if (selectedSubstrates.length > 0) {
+          fetchedProducts = fetchedProducts.filter((p: CoatingsAdhesivesProduct) =>
+            p.substrates &&
+            selectedSubstrates.some((sub) =>
+              p.substrates!.toLowerCase().includes(sub.toLowerCase())
+            )
+          );
+        }
+
+        // Apply Cure Condition filter
+        // Maps friendly option labels → DB value patterns
+        if (selectedCureConditions.length > 0) {
+          const curePatternMap: Record<string, RegExp> = {
+            "Room Temperature Cure": /ambient|room\s*temp|\brt\b/i,
+            "Low Temperature Cure (< 80°C)": /\b[4-7]\d\s*[°c]/i,
+            "Standard Temperature Cure (80–150°C)": /\b(8[0-9]|9\d|1[0-4]\d|150)\s*[°c]/i,
+            "High Temperature Cure (> 150°C)": /\b1[5-9]\d\s*[°c]|\b[2-9]\d{2}\s*[°c]/i,
+          };
+          fetchedProducts = fetchedProducts.filter((p: CoatingsAdhesivesProduct) =>
+            p.cure_condition &&
+            selectedCureConditions.some((cc) => {
+              const pattern = curePatternMap[cc];
+              return pattern ? pattern.test(p.cure_condition!) : p.cure_condition!.toLowerCase().includes(cc.toLowerCase());
+            })
+          );
+        }
+
+        // Apply NVH filter
+        if (selectedNVH.length > 0) {
+          fetchedProducts = fetchedProducts.filter((p: CoatingsAdhesivesProduct) =>
+            p.nvh && selectedNVH.includes(p.nvh)
+          );
+        }
+
+        // Apply IB Segment filter (partial match)
+        if (selectedIBSegments.length > 0) {
+          fetchedProducts = fetchedProducts.filter((p: CoatingsAdhesivesProduct) =>
+            p.ib_segment &&
+            selectedIBSegments.some((seg) =>
+              p.ib_segment!.toLowerCase().includes(seg.toLowerCase())
+            )
+          );
+        }
+
         // Enrich each real product with mock fallback values for any unpopulated tech spec
         // fields, so cards always display complete data while product identity stays real.
         const enriched: CoatingsAdhesivesProduct[] = fetchedProducts.map(
@@ -741,12 +829,26 @@ export function CriteriaResults() {
     productSearch,
     selectedABCClasses,
     selectedEndUses,
+    selected1C2CProduct,
+    selectedTopAccounts,
+    selectedPumpability,
+    selectedSubstrates,
+    selectedCureConditions,
+    selectedNVH,
+    selectedIBSegments,
   ]);
 
   const hasActiveFilters =
-    productSearch ||
+    !!productSearch ||
     selectedABCClasses.length > 0 ||
-    selectedEndUses.length > 0;
+    selectedEndUses.length > 0 ||
+    selected1C2CProduct.length > 0 ||
+    selectedTopAccounts.length > 0 ||
+    selectedPumpability.length > 0 ||
+    selectedSubstrates.length > 0 ||
+    selectedCureConditions.length > 0 ||
+    selectedNVH.length > 0 ||
+    selectedIBSegments.length > 0;
 
   const activeChips = [
     productSearch && {
@@ -756,7 +858,7 @@ export function CriteriaResults() {
     },
     ...selectedABCClasses.map((c) => ({
       key: `abcClass-${c}`,
-      label: `ABC Class: ${c}`,
+      label: `ABC: ${c}`,
       clear: () => setSelectedABCClasses(selectedABCClasses.filter((v) => v !== c)),
     })),
     ...selectedEndUses.map((e) => ({
@@ -764,12 +866,54 @@ export function CriteriaResults() {
       label: `End Use: ${e}`,
       clear: () => setSelectedEndUses(selectedEndUses.filter((v) => v !== e)),
     })),
+    ...selected1C2CProduct.map((v) => ({
+      key: `oneCTwoC-${v}`,
+      label: v,
+      clear: () => setSelected1C2CProduct(selected1C2CProduct.filter((x) => x !== v)),
+    })),
+    ...selectedTopAccounts.map((v) => ({
+      key: `topAccount-${v}`,
+      label: v,
+      clear: () => setSelectedTopAccounts(selectedTopAccounts.filter((x) => x !== v)),
+    })),
+    ...selectedPumpability.map((v) => ({
+      key: `pumpability-${v}`,
+      label: v,
+      clear: () => setSelectedPumpability(selectedPumpability.filter((x) => x !== v)),
+    })),
+    ...selectedSubstrates.map((v) => ({
+      key: `substrate-${v}`,
+      label: v,
+      clear: () => setSelectedSubstrates(selectedSubstrates.filter((x) => x !== v)),
+    })),
+    ...selectedCureConditions.map((v) => ({
+      key: `cureCondition-${v}`,
+      label: v,
+      clear: () => setSelectedCureConditions(selectedCureConditions.filter((x) => x !== v)),
+    })),
+    ...selectedNVH.map((v) => ({
+      key: `nvh-${v}`,
+      label: `NVH: ${v}`,
+      clear: () => setSelectedNVH(selectedNVH.filter((x) => x !== v)),
+    })),
+    ...selectedIBSegments.map((v) => ({
+      key: `ibSegment-${v}`,
+      label: v,
+      clear: () => setSelectedIBSegments(selectedIBSegments.filter((x) => x !== v)),
+    })),
   ].filter(Boolean) as { key: string; label: string; clear: () => void }[];
 
   const clearAllFilters = () => {
     setProductSearch("");
     setSelectedABCClasses([]);
     setSelectedEndUses([]);
+    setSelected1C2CProduct([]);
+    setSelectedTopAccounts([]);
+    setSelectedPumpability([]);
+    setSelectedSubstrates([]);
+    setSelectedCureConditions([]);
+    setSelectedNVH([]);
+    setSelectedIBSegments([]);
   };
 
   const toggleProductComparison = (productId: string) => {
@@ -1154,11 +1298,6 @@ export function CriteriaResults() {
 
                     <div
                       onClick={() => {
-                        addRecentItem({
-                          id: product.id,
-                          name: product.ib_product_name,
-                          category: categoryDisplay,
-                        });
                         navigate(`/product/${product.id}`, { state: { product } });
                       }}
                       className="block cursor-pointer"
@@ -1472,13 +1611,6 @@ export function CriteriaResults() {
                         <td className="px-3 py-3">
                           <a
                             href={`/product/${product.id}`}
-                            onClick={() => {
-                              addRecentItem({
-                                id: product.id,
-                                name: product.ib_product_name,
-                                category: categoryDisplay,
-                              });
-                            }}
                             className="text-sm font-medium text-slate-900 hover:text-[#D4000E] transition-colors whitespace-nowrap"
                           >
                             {product.ib_product_name}

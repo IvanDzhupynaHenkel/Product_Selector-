@@ -1,7 +1,6 @@
 import { useParams, useNavigate, useLocation } from "react-router";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useRecentItems } from "../contexts/RecentItemsContext";
 import { projectId, publicAnonKey } from "/utils/supabase/info";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -101,7 +100,6 @@ export function ProductDetail() {
   const { productId } = useParams<{ productId: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const { addRecentItem } = useRecentItems();
 
   // Try to get product from navigation state first (instant — no fetch needed)
   const stateProduct: ProductData | undefined = (location.state as { product?: ProductData })?.product;
@@ -113,11 +111,6 @@ export function ProductDetail() {
   useEffect(() => {
     // If we already have product data from navigation state, skip the fetch
     if (stateProduct) {
-      addRecentItem({
-        id: stateProduct.id,
-        name: stateProduct.ib_product_name,
-        category: "Coatings & Adhesives",
-      });
       return;
     }
 
@@ -128,7 +121,6 @@ export function ProductDetail() {
       const mock = MOCK_PRODUCTS.find((m) => m.id === productId) ?? MOCK_PRODUCTS[0];
       setProduct(mock);
       setLoading(false);
-      addRecentItem({ id: mock.id, name: mock.ib_product_name, category: "Coatings & Adhesives" });
       return;
     }
 
@@ -165,7 +157,6 @@ export function ProductDetail() {
           cure_condition:      p.cure_condition      ?? mock.cure_condition,
         };
         setProduct(enriched);
-        addRecentItem({ id: p.id, name: p.ib_product_name, category: "Coatings & Adhesives" });
       } catch {
         // Network error or timeout — fall back to a mock so the page isn't blank
         const fallback = MOCK_PRODUCTS[0];

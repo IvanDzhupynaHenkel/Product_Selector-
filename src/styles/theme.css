@@ -159,8 +159,9 @@
 
   h3 {
     font-size: var(--text-lg);
-    font-weight: var(--font-weight-medium);
+    font-weight: 500;
     line-height: 1.5;
+    font-family: "Henkel GT Flexa", "Segoe UI", system-ui, -apple-system, sans-serif;
   }
 
   h4 {
