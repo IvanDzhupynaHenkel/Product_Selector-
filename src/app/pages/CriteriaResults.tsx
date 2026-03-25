@@ -166,6 +166,158 @@ const MOCK_PRODUCTS: CoatingsAdhesivesProduct[] = [
   },
 ];
 
+// ── Static Glass Bonding Solution product data ──────────────────────────────
+// Fields mapped: lap_shear → Shear Strength Full Cure (MPa)
+//               e_modulus  → Shear Modulus G10 at 23°C (MPa)
+//               cure_condition → In-Service Temperature range
+//               viscosity  → Viscosity at 23°C (Pas)
+const GLASS_BONDING_PRODUCTS: CoatingsAdhesivesProduct[] = [
+  {
+    id: "gb-1", ib_product_code: "0000121981", ib_product_name: "BONDERITE C-SO 8550",
+    tds_link: null, abc_class: "A5", one_c_two_c_product: "1C", end_use: "Cleaner",
+    value_proposition: "Used for cleaning glass, ceramic coatings and painted surfaces of dust and fingerprints prior to glass bonding.",
+    benefits: null, substrates: null, viscosity: null,
+    recommended_coat_weight_lb_rm: null, pumpability: null, nvh: null,
+    mix_ratio_volume: null, cure_condition: null,
+    lap_shear_n_mm2: null, t_peel_n_mm: null, e_modulus_dma_gpa: null, impact_peel_n_mm_rt: null,
+    density_g_cm3: 0.8,
+    ib_segment: "AM BYD; AM Chinese OEMs; AM Ford-Group; AM GM Group; AM Hyundai-Group; AM NEV; AM Other OEM Manufac; AM SAIC; AM Truck & Bus; AM VW-Group",
+    top_account_name: "VW, Ford, BYD", customer_approval: "VW, Ford, BYD",
+  },
+  {
+    id: "gb-2", ib_product_code: "0000120457", ib_product_name: "TEROSON BOND 120",
+    tds_link: null, abc_class: "A2", one_c_two_c_product: "1C", end_use: "Adhesive",
+    value_proposition: "Good sag resistance, compatible with ADAS. High elastic and shear strength. Low conductivity.",
+    benefits: null, substrates: "Glass\nPainted Metal\nCeramic Coating",
+    viscosity: "6 Pas", recommended_coat_weight_lb_rm: null, pumpability: null, nvh: null,
+    mix_ratio_volume: null, cure_condition: "-40 to 90°C in service",
+    lap_shear_n_mm2: 8.5, t_peel_n_mm: null, e_modulus_dma_gpa: 2.0, impact_peel_n_mm_rt: null,
+    density_g_cm3: 1.3,
+    ib_segment: "AM Mercedes; AM Stellantis; AM Toyota Group; FI postings",
+    top_account_name: null, customer_approval: null,
+  },
+  {
+    id: "gb-3", ib_product_code: "0000121653", ib_product_name: "TEROSON BOND 15",
+    tds_link: null, abc_class: "A2", one_c_two_c_product: "1C", end_use: "Adhesive",
+    value_proposition: "OEM approved. Excellent sag resistance, compatible with ADAS. Extremely high position tack. High shear modulus. Low conductivity.",
+    benefits: null, substrates: "Glass\nPainted Metal\nCeramic Coating",
+    viscosity: "4.5 Pas", recommended_coat_weight_lb_rm: null, pumpability: null, nvh: null,
+    mix_ratio_volume: null, cure_condition: "-40 to 90°C in service",
+    lap_shear_n_mm2: 10.5, t_peel_n_mm: null, e_modulus_dma_gpa: 3.2, impact_peel_n_mm_rt: null,
+    density_g_cm3: 1.3,
+    ib_segment: "AM Renault",
+    top_account_name: null, customer_approval: null,
+  },
+  {
+    id: "gb-4", ib_product_code: "0000121790", ib_product_name: "TEROSON BOND 180",
+    tds_link: null, abc_class: "A2", one_c_two_c_product: "1C", end_use: "Adhesive",
+    value_proposition: "Excellent adhesion to glass, ceramic coating, encapsulation and painted surfaces in connection with primer / activator.",
+    benefits: null, substrates: "Glass\nCeramic Coating\nPainted Metal",
+    viscosity: "3 Pas", recommended_coat_weight_lb_rm: null, pumpability: null, nvh: null,
+    mix_ratio_volume: null, cure_condition: "-40 to 90°C in service",
+    lap_shear_n_mm2: 4.5, t_peel_n_mm: null, e_modulus_dma_gpa: 0.8, impact_peel_n_mm_rt: null,
+    density_g_cm3: 1.2,
+    ib_segment: "AM Other OEM Manufac",
+    top_account_name: null, customer_approval: null,
+  },
+  {
+    id: "gb-5", ib_product_code: "0000058096", ib_product_name: "TEROSON PU 9092 PL",
+    tds_link: null, abc_class: "A2", one_c_two_c_product: "1C", end_use: "Adhesive",
+    value_proposition: null,
+    benefits: null, substrates: "Glass\nPainted Metal",
+    viscosity: "3 Pas", recommended_coat_weight_lb_rm: null, pumpability: null, nvh: null,
+    mix_ratio_volume: null, cure_condition: "-40 to 90°C in service",
+    lap_shear_n_mm2: 4.5, t_peel_n_mm: null, e_modulus_dma_gpa: 0.8, impact_peel_n_mm_rt: null,
+    density_g_cm3: 1.2,
+    ib_segment: "AM Other OEM Manufac",
+    top_account_name: null, customer_approval: null,
+  },
+  {
+    id: "gb-6", ib_product_code: "0000060109", ib_product_name: "TEROSON PU 8517 H",
+    tds_link: null, abc_class: "A4", one_c_two_c_product: "1C", end_use: "Primer",
+    value_proposition: "Suitable for multi-substrate. Adhesion promoter.",
+    benefits: null, substrates: null,
+    viscosity: null, recommended_coat_weight_lb_rm: null, pumpability: null, nvh: null,
+    mix_ratio_volume: null, cure_condition: "-40 to 90°C in service",
+    lap_shear_n_mm2: null, t_peel_n_mm: null, e_modulus_dma_gpa: null, impact_peel_n_mm_rt: null,
+    density_g_cm3: 0.98,
+    ib_segment: "AM BMW; AM BYD; AM Chinese OEMs; AM Ford-Group; AM GM Group; AM Hyundai-Group; AM Jaguar Land Rover; AM Mahindra; AM Mercedes; AM NEV; AM Nissan; AM Other OEM Manufac; AM Renault; AM SAIC; AM Stellantis; AM Tesla; AM Toyota Group; AM Truck & Bus; AM VW-Group; AMC Auto-Suppliers; FI postings",
+    top_account_name: "BYD, Chery, Bus", customer_approval: "BYD, Chery, Bus",
+  },
+  {
+    id: "gb-7", ib_product_code: "0000113220", ib_product_name: "TEROSON PU 8521",
+    tds_link: null, abc_class: "A4", one_c_two_c_product: "1C", end_use: "Primer",
+    value_proposition: "Body primer.",
+    benefits: null, substrates: null,
+    viscosity: null, recommended_coat_weight_lb_rm: null, pumpability: null, nvh: null,
+    mix_ratio_volume: null, cure_condition: null,
+    lap_shear_n_mm2: null, t_peel_n_mm: null, e_modulus_dma_gpa: null, impact_peel_n_mm_rt: null,
+    density_g_cm3: null,
+    ib_segment: "AM BYD; AM Chinese OEMs; AM Ford-Group; AM GM Group; AM Hyundai-Group; AM Jaguar Land Rover; AM Mahindra; AM Mercedes; AM NEV; AM Nissan; AM Other OEM Manufac; AM Renault; AM SAIC; AM Stellantis; AM Tata; AM Toyota Group; AM Truck & Bus; AM VW-Group; AMC Auto-Suppliers; FI postings",
+    top_account_name: "SVW, Chery", customer_approval: "SVW, Chery",
+  },
+  {
+    id: "gb-8", ib_product_code: "0000109776", ib_product_name: "TEROSON PU 8590 UHV-MT S",
+    tds_link: null, abc_class: "A4", one_c_two_c_product: "1C", end_use: "Adhesive",
+    value_proposition: "Medium-high viscosity. VW approval.",
+    benefits: null, substrates: null,
+    viscosity: "4000–5000 Pas", recommended_coat_weight_lb_rm: null, pumpability: null, nvh: null,
+    mix_ratio_volume: null, cure_condition: null,
+    lap_shear_n_mm2: null, t_peel_n_mm: null, e_modulus_dma_gpa: null, impact_peel_n_mm_rt: null,
+    density_g_cm3: 0.97,
+    ib_segment: "AM BMW; AM BYD; AM Chinese OEMs; AM Ford-Group; AM GM Group; AM Honda; AM Hyundai-Group; AM Jaguar Land Rover; AM Mahindra; AM Mercedes; AM NEV; AM Nissan; AM Other OEM Manufac; AM Renault; AM SAIC; AM Stellantis; AM Suzuki; AM Tata; AM Toyota Group; AM Truck & Bus; AM VW-Group; AMC Auto-Suppliers; FI postings",
+    top_account_name: "BYD", customer_approval: "BYD",
+  },
+  {
+    id: "gb-9", ib_product_code: "0000047075", ib_product_name: "TEROSON PU 8591",
+    tds_link: null, abc_class: "A4", one_c_two_c_product: "1C", end_use: "Adhesive",
+    value_proposition: "Medium-viscosity. Standard DGX.",
+    benefits: null, substrates: "Glass\nPainted Metal",
+    viscosity: "4000–5000 Pas", recommended_coat_weight_lb_rm: null, pumpability: null, nvh: null,
+    mix_ratio_volume: null, cure_condition: "-40 to 90°C in service",
+    lap_shear_n_mm2: 8.0, t_peel_n_mm: null, e_modulus_dma_gpa: 1.5, impact_peel_n_mm_rt: null,
+    density_g_cm3: 1.21,
+    ib_segment: "AM Chinese OEMs; AM GM Group; AM NEV",
+    top_account_name: "Chery", customer_approval: "Chery",
+  },
+  {
+    id: "gb-10", ib_product_code: "0000002609", ib_product_name: "TEROSON PU 8597",
+    tds_link: null, abc_class: "A4", one_c_two_c_product: "1C", end_use: "Adhesive",
+    value_proposition: null,
+    benefits: null, substrates: "Glass\nPainted Metal",
+    viscosity: "5500–7000 Pas", recommended_coat_weight_lb_rm: null, pumpability: null, nvh: null,
+    mix_ratio_volume: null, cure_condition: "-40 to 90°C in service",
+    lap_shear_n_mm2: 8.5, t_peel_n_mm: null, e_modulus_dma_gpa: 1.5, impact_peel_n_mm_rt: null,
+    density_g_cm3: 1.28,
+    ib_segment: "AM GM Group; AM Mercedes; AM Truck & Bus",
+    top_account_name: "Mercedes-Benz Turk A.S., Daimler Bus", customer_approval: "Mercedes-Benz Turk A.S., Daimler Bus",
+  },
+  {
+    id: "gb-11", ib_product_code: "0000060084", ib_product_name: "TEROSON PU 8599",
+    tds_link: null, abc_class: "A4", one_c_two_c_product: "1C", end_use: "Adhesive",
+    value_proposition: "High position tack.",
+    benefits: null, substrates: "Glass\nPainted Metal",
+    viscosity: "6000–7500 Pas", recommended_coat_weight_lb_rm: null, pumpability: null, nvh: null,
+    mix_ratio_volume: null, cure_condition: "-40 to 90°C in service",
+    lap_shear_n_mm2: 9.0, t_peel_n_mm: null, e_modulus_dma_gpa: 2.5, impact_peel_n_mm_rt: null,
+    density_g_cm3: 1.27,
+    ib_segment: "AM GM Group; AM Mercedes; AM Renault; AM Truck & Bus; AM VW-Group; FI postings",
+    top_account_name: "MAN Bus, Daimler Bus", customer_approval: "MAN Bus, Daimler Bus",
+  },
+  {
+    id: "gb-12", ib_product_code: "0000009417", ib_product_name: "TEROSON PU 8910",
+    tds_link: null, abc_class: "A4", one_c_two_c_product: "1C", end_use: "Adhesive",
+    value_proposition: "Primerless on glass. High position tack.",
+    benefits: null, substrates: "Glass\nPainted Metal",
+    viscosity: "5000–6500 Pas", recommended_coat_weight_lb_rm: null, pumpability: null, nvh: null,
+    mix_ratio_volume: null, cure_condition: "-40 to 90°C in service",
+    lap_shear_n_mm2: 7.5, t_peel_n_mm: null, e_modulus_dma_gpa: 1.5, impact_peel_n_mm_rt: null,
+    density_g_cm3: 1.27,
+    ib_segment: "AM GM Group; AM Mercedes; AM Stellantis; AM VW-Group",
+    top_account_name: "Scania Latin America LTDA", customer_approval: "Scania Latin America LTDA",
+  },
+];
+
 function MultiSelectDropdown({
   id,
   label,
@@ -667,6 +819,23 @@ export function CriteriaResults() {
     const fetchProducts = async () => {
       setLoading(true);
       setError(null);
+
+      // ── Glass Bonding Solution uses static data ──────────────────────────
+      if (category === "glass-bonding-solution") {
+        let filtered = [...GLASS_BONDING_PRODUCTS];
+        if (productSearch) filtered = filtered.filter(p => p.ib_product_name?.toLowerCase().includes(productSearch.toLowerCase()));
+        if (selected1C2CProduct.length > 0) filtered = filtered.filter(p => p.one_c_two_c_product && selected1C2CProduct.includes(p.one_c_two_c_product));
+        if (selectedEndUses.length > 0) filtered = filtered.filter(p => p.end_use && selectedEndUses.includes(p.end_use));
+        if (selectedCureConditions.length > 0) filtered = filtered.filter(p => p.cure_condition && selectedCureConditions.some(cc => p.cure_condition!.includes(cc)));
+        if (selectedIBSegments.length > 0) filtered = filtered.filter(p => p.ib_segment && selectedIBSegments.some(s => p.ib_segment!.toLowerCase().includes(s.toLowerCase())));
+        if (selectedTopAccounts.length > 0) filtered = filtered.filter(p => p.top_account_name && selectedTopAccounts.some(a => p.top_account_name!.toLowerCase().includes(a.toLowerCase())));
+        filtered = filtered.filter(p => p.lap_shear_n_mm2 == null || (p.lap_shear_n_mm2 >= lapShearRange[0] && p.lap_shear_n_mm2 <= lapShearRange[1]));
+        filtered = filtered.filter(p => p.e_modulus_dma_gpa == null || (p.e_modulus_dma_gpa >= eModulusRange[0] && p.e_modulus_dma_gpa <= eModulusRange[1]));
+        setProducts(filtered.length > 0 ? filtered : GLASS_BONDING_PRODUCTS);
+        setLoading(false);
+        return;
+      }
+
       try {
         const filters: any = {};
 
@@ -836,6 +1005,10 @@ export function CriteriaResults() {
     selectedCureConditions,
     selectedNVH,
     selectedIBSegments,
+    selectedEndUses,
+    category,
+    lapShearRange,
+    eModulusRange,
   ]);
 
   const hasActiveFilters =
@@ -934,11 +1107,12 @@ export function CriteriaResults() {
     category?.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ") ||
     "Coatings & Adhesives";
   const showFullFilters = !scrolled || filtersExpanded;
+  const isGlassBonding = category === "glass-bonding-solution";
 
   return (
     <div className="h-full flex flex-col" onClick={() => setOpenDropdown(null)}>
       {/* Page Header - Back button and Title */}
-      <div className="bg-white border-b border-slate-200">
+      <div className="bg-white">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -956,8 +1130,8 @@ export function CriteriaResults() {
         </div>
       </div>
 
-      {/* Filter bar */}
-      <div className="bg-white border-b border-slate-200" onClick={(e) => e.stopPropagation()}>
+      {/* Filter bar — hidden for glass bonding (uses left sidebar instead) */}
+      {!isGlassBonding && <div className="bg-white" onClick={(e) => e.stopPropagation()}>
         {/* ── Condensed bar — visible only when scrolled ── */}
         <div
           className="overflow-hidden transition-all duration-200 ease-in-out"
@@ -1182,11 +1356,75 @@ export function CriteriaResults() {
             )}
           </div>
         </div>
-      </div>
+      </div>}
 
-      {/* Results area */}
-      <div ref={resultsScrollRef} className="flex-1 overflow-y-auto bg-slate-50">
-        <div className="max-w-7xl mx-auto px-6 py-6">
+      {/* Main content: sidebar (glass bonding) + results */}
+      <div className="flex-1 flex overflow-hidden">
+
+        {/* ── Left sidebar — glass bonding only ── */}
+        {isGlassBonding && (
+          <div
+            className="w-72 bg-white flex-shrink-0 overflow-y-auto px-4 py-5 space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 pb-1">Filters</p>
+
+            {/* Search */}
+            <div>
+              <label className="block text-xs font-semibold mb-1.5 text-slate-600">IB Product Name</label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                <input
+                  type="text"
+                  value={productSearch}
+                  onChange={(e) => setProductSearch(e.target.value)}
+                  placeholder="Search..."
+                  className="w-full pl-8 pr-8 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 placeholder:text-slate-400 hover:border-slate-400 focus:outline-none focus:border-slate-600 transition-colors"
+                />
+                {productSearch && (
+                  <button onClick={() => setProductSearch("")} className="absolute right-2 top-1/2 -translate-y-1/2">
+                    <X className="w-3.5 h-3.5 text-slate-400 hover:text-slate-600" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <MultiSelectDropdown id="sb-oneCTwoC" label="1C/2C Product" selectedValues={selected1C2CProduct} options={["1C", "2C"]} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} onChange={setSelected1C2CProduct} singleSelect />
+            <MultiSelectDropdown id="sb-productCat" label="Product Category" selectedValues={selectedEndUses} options={["Adhesive", "Primer", "Cleaner"]} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} onChange={setSelectedEndUses} />
+            <MultiSelectDropdown id="sb-cureCondition" label="Cure Condition" selectedValues={selectedCureConditions} options={["-40 to 90°C in service"]} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} onChange={setSelectedCureConditions} />
+            <MultiSelectDropdown id="sb-ibSegment" label="IB Segment" selectedValues={selectedIBSegments} options={filterOptions.ib_segment} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} onChange={setSelectedIBSegments} />
+            <MultiSelectDropdown id="sb-topAccount" label="Top Account Name" selectedValues={selectedTopAccounts} options={filterOptions.top_account_name} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} onChange={setSelectedTopAccounts} />
+
+            {/* Range sliders */}
+            <div className="bg-[#F8F8F8] rounded-xl p-3 space-y-4">
+              <RangeSlider label="Tensile Strength [MPa]" min={2.5} max={12.0} step={0.1} values={lapShearRange} onChange={setLapShearRange} />
+              <RangeSlider label="Shear Modulus G10 [MPa]" min={0.5} max={4.0} step={0.1} values={eModulusRange} onChange={setEModulusRange} />
+            </div>
+
+            {/* Active chips */}
+            {hasActiveFilters && (
+              <div className="pt-1 space-y-2">
+                <div className="flex flex-wrap gap-1.5">
+                  {activeChips.map((chip) => (
+                    <div key={chip.key} className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 border border-slate-200 rounded-full">
+                      <span className="text-xs text-slate-700">{chip.label}</span>
+                      <button onClick={chip.clear} className="hover:bg-slate-200 rounded-full p-0.5">
+                        <X className="w-2.5 h-2.5 text-slate-500" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <button onClick={clearAllFilters} className="text-xs text-slate-400 hover:text-[#D4000E] transition-colors underline underline-offset-2">
+                  Clear all
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Results area */}
+        <div ref={resultsScrollRef} className="flex-1 overflow-y-auto bg-[#F5F5F7]">
+          <div className={isGlassBonding ? "px-6 py-6" : "max-w-7xl mx-auto px-6 py-6"}>
           {/* Results header - count + view toggle */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
@@ -1272,9 +1510,12 @@ export function CriteriaResults() {
                 return (
                   <div
                     key={product.id}
-                    className={`bg-white rounded-[14px] border hover:shadow-md transition-all relative ${
-                      isSelected ? "border-[#1a2332] border-2" : "border-slate-200"
+                    className={`bg-white rounded-2xl transition-all duration-300 ease-out relative hover:-translate-y-0.5 ${
+                      isSelected ? "ring-2 ring-[#1a2332]" : ""
                     }`}
+                    style={{ boxShadow: isSelected ? "0 2px 14px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.05)" : "0 2px 14px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.05)" }}
+                    onMouseEnter={e => (e.currentTarget.style.boxShadow = "0 8px 30px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)")}
+                    onMouseLeave={e => (e.currentTarget.style.boxShadow = "0 2px 14px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.05)")}
                   >
                     {/* Comparison checkbox */}
                     <button
@@ -1450,7 +1691,7 @@ export function CriteriaResults() {
                       </div>
 
                       {/* Technical specs section (gray background) */}
-                      <div className="bg-slate-50/60 border-t border-slate-100 rounded-b-[14px] px-5 py-3.5 space-y-3">
+                      <div className="bg-slate-50/60 border-t border-slate-100 rounded-b-2xl px-5 py-3.5 space-y-3">
                         {/* Technical specs grid - 6 columns matching screenshot */}
                         <div className="grid grid-cols-6 gap-4">
                           {/* Mix Ratio (Volume) */}
@@ -1689,7 +1930,8 @@ export function CriteriaResults() {
             </div>
           )}
         </div>
-      </div>
+        </div>{/* end results scroll area */}
+      </div>{/* end main flex area */}
 
       {/* Floating comparison bar */}
       {selectedForComparison.size > 0 && (
