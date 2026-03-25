@@ -572,73 +572,79 @@ export function CategorySelection() {
 
   return (
     <>
-      <div className="max-w-7xl mx-auto p-6 md:p-12 pb-32">
-        <div className="mb-12">
-          <h1 className="font-medium text-slate-900 mb-2 font-[Henkel_GT_Flexa] font-bold" style={{ fontSize: "28px" }}>Which product family do you need?</h1>
-          <p className="text-slate-600">
-            Select a category to find the right product for your application, or use Smart Search below.
-          </p>
-        </div>
+      <div className="min-h-full bg-[#F5F5F7]">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 pt-10 pb-36">
+          <div className="mb-12">
+            <h1 className="font-semibold text-slate-900 mb-2 font-[Henkel_GT_Flexa] tracking-tight" style={{ fontSize: "32px", letterSpacing: "-0.3px" }}>
+              Which product family do you need?
+            </h1>
+            <p className="text-slate-500 text-base" style={{ letterSpacing: "0.1px" }}>
+              Select a category to find the right product for your application, or use Smart Search below.
+            </p>
+          </div>
 
-        <div className="space-y-12">
-          {Object.entries(groupedCategories).map(([unit, data]) => (
-            <div key={unit}>
-              <h2 className="text-xs font-medium uppercase tracking-wide text-slate-500 mb-4">
-                {data.name}
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {data.categories.map((category) => {
-                  const categoryImage = categoryImages[category.name];
-                  
-                  return (
-                    <Link
-                      key={category.name}
-                      to={`/criteria/${category.name.toLowerCase().replace(/\s+/g, "-")}`}
-                      className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all relative overflow-hidden"
-                    >
-                      {/* Business Unit badge - top right */}
-                      <div className="absolute top-3.5 right-3.5 z-10">
-                        <span className="inline-block px-2 py-1 bg-slate-100 text-slate-600 text-xs font-medium rounded">
-                          {category.businessUnit}
-                        </span>
-                      </div>
+          <div className="space-y-10">
+            {Object.entries(groupedCategories).map(([unit, data]) => (
+              <div key={unit}>
+                <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-4 px-1">
+                  {data.name}
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {data.categories.map((category) => {
+                    const categoryImage = categoryImages[category.name];
 
-                      {/* Image container - left side */}
-                      {categoryImage && (
-                        <div className="absolute left-6 top-3.5 h-[74px] w-[131px] overflow-hidden rounded">
-                          <img 
-                            src={categoryImage} 
-                            alt={category.name}
-                            className="h-full w-full object-contain shadow-sm"
-                          />
+                    return (
+                      <Link
+                        key={category.name}
+                        to={`/criteria/${category.name.toLowerCase().replace(/\s+/g, "-")}`}
+                        className="group relative bg-white rounded-2xl overflow-hidden flex flex-col transition-all duration-300 ease-out hover:-translate-y-1"
+                        style={{ boxShadow: "0 2px 14px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.05)" }}
+                        onMouseEnter={e => (e.currentTarget.style.boxShadow = "0 8px 30px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)")}
+                        onMouseLeave={e => (e.currentTarget.style.boxShadow = "0 2px 14px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.05)")}
+                      >
+                        {/* Text block */}
+                        <div className="px-6 pt-6 pb-4 flex-1">
+                          <span className="block text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-2.5">
+                            {category.businessUnit}
+                          </span>
+                          <h3
+                            className="font-semibold text-slate-900 leading-snug mb-1.5 transition-colors duration-200 group-hover:text-[#D4000E]"
+                            style={{ fontSize: "18px", letterSpacing: "-0.2px" }}
+                          >
+                            {category.name}
+                          </h3>
+                          <p className="text-sm text-slate-400" style={{ letterSpacing: "0.1px" }}>
+                            {category.productCount} products
+                            {category.regional ? ` · ${category.regional}` : ""}
+                          </p>
                         </div>
-                      )}
 
-                      {/* Text content */}
-                      <div className="pt-[87px] px-6 pb-4">
-                        <h3 className="font-medium text-slate-900 mb-1 group-hover:text-[#D4000E] transition-colors text-lg">
-                          {category.name}
-                        </h3>
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-slate-600">{category.productCount} products</span>
-                          {category.regional && (
-                            <span className="text-xs text-slate-500">{category.regional} only</span>
+                        {/* Image block */}
+                        <div className="h-36 mx-6 mb-5 flex items-end justify-center">
+                          {categoryImage ? (
+                            <img
+                              src={categoryImage}
+                              alt={category.name}
+                              className="h-full w-full object-contain transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+                            />
+                          ) : (
+                            <div className="w-full h-full rounded-xl bg-slate-50" />
                           )}
                         </div>
-                      </div>
-                    </Link>
-                  );
-                })}
+                      </Link>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
 
-        <div className="mt-16 pt-8 border-t border-slate-200">
-          <p className="text-sm text-slate-500 italic">
-            This selector guides product recommendations based on technical criteria.
-            Henkel expert consultation is recommended to confirm suitability.
-          </p>
+          <div className="mt-16 pt-8 border-t border-slate-200/80">
+            <p className="text-sm text-slate-400" style={{ letterSpacing: "0.1px" }}>
+              This selector guides product recommendations based on technical criteria.
+              Henkel expert consultation is recommended to confirm suitability.
+            </p>
+          </div>
         </div>
       </div>
 
